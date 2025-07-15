@@ -1,0 +1,178 @@
+<?php
+/**
+ * Modifica la página de perfil (/wp-admin/profile.php) para un rol de usuario específico,
+ * mostrando los campos de WooCommerce en lugar de los campos de WordPress por defecto.
+ *
+ * VERSIÓN CORREGIDA Y ACTUALIZADA.
+ */
+add_filter( 'woocommerce_prevent_admin_access', '__return_false' );
+// --- Define aquí el rol de usuario que quieres modificar ---
+define('ROL_PARA_MODIFICAR_PERFIL', 'client'); // Cambia 'customer' por el rol que necesites.
+
+// 1. Hook para añadir nuestro CSS y JS personalizados a la página de perfil.
+add_action('admin_enqueue_scripts', 'ocultar_campos_perfil_por_defecto_v2');
+function ocultar_campos_perfil_por_defecto_v2($hook) {
+    if ('profile.php' !== $hook) {
+        return;
+    }
+
+    $user = wp_get_current_user();
+    if (in_array(ROL_PARA_MODIFICAR_PERFIL, $user->roles)) {
+        wp_add_inline_style('wp-admin', "
+            /* Ocultar secciones de perfil de WordPress */
+            body.profile-php h2,
+            body.profile-php form > table:not(.wc-customer-fields),
+            body.profile-php p.submit,
+            body.profile-php #application-passwords-section {
+                display: none !important;
+            }
+
+            /* Mostrar solo títulos y botón de guardado de WooCommerce */
+            body.profile-php h2.wc-customer-fields-title,
+            body.profile-php p.wc-profile-submit {
+                display: block !important;
+            }
+        ");
+    }
+}
+
+// 2. Hook para mostrar los campos de WooCommerce en la página de perfil.
+add_action('show_user_profile', 'mostrar_campos_woocommerce_en_perfil_v2');
+function mostrar_campos_woocommerce_en_perfil_v2($profileuser) {
+    $current_user = wp_get_current_user();
+    if (!in_array(ROL_PARA_MODIFICAR_PERFIL, $current_user->roles)) {
+        return;
+    }
+
+    if (!class_exists('WooCommerce')) {
+        return;
+    }
+    
+    // Obtenemos los campos de facturación y envío usando el método moderno y correcto.
+    $billing_fields = WC()->checkout()->get_checkout_fields('billing');
+    $shipping_fields = WC()->checkout()->get_checkout_fields('shipping');
+
+    // Mostramos los campos de facturación
+    echo '<h2 class="wc-customer-fields-title">Dirección de facturación</h2>';
+    echo '<table class="form-table wc-customer-fields" id="fieldset-billing">';
+    foreach ($billing_fields as $key => $field) {
+        // Añadimos el prefijo 'billing_' si no lo tiene, para que coincida con el user_meta
+        if (strpos($key, 'billing_') !== 0) {
+            $key = 'billing_' . $key;
+        }
+        woocommerce_form_field($key, $field, get_user_meta($profileuser->ID, $key, true));
+    }
+    echo '</table>';
+
+    // Mostramos los campos de envío
+    echo '<h2 class="wc-customer-fields-title">Dirección de envío</h2>';
+    echo '<table class="form-table wc-customer-fields" id="fieldset-shipping">';
+    foreach ($shipping_fields as $key => $field) {
+        // Añadimos el prefijo 'shipping_' si no lo tiene
+        if (strpos($key, 'shipping_') !== 0) {
+            $key = 'shipping_' . $key;
+        }
+        woocommerce_form_field($key, $field, get_user_meta($profileuser->ID, $key, true));
+    }
+    echo '</table>';
+    
+    // Añadimos nuestro propio botón de guardar para que sea visible
+    echo '<p class="submit wc-profile-submit">';
+    echo '<input type="submit" name="submit" id="submit" class="button button-primary" value="Actualizar perfil">';
+    echo '</p>';
+}
+
+// 3. Hook para guardar los datos de WooCommerce cuando se actualiza el perfil.
+add_action('personal_options_update', 'guardar_campos_woocommerce_en_perfil_v2');
+function guardar_campos_woocommerce_en_perfil_v2($user_id) {
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+    
+    // No es necesario comprobar el rol aquí, ya que el hook se encarga de los permisos.
+    if (!class_exists('WooCommerce')) {
+        return;
+    }
+
+    $billing_fields = WC()->checkout()->get_checkout_fields('billing');
+    $shipping_fields = WC()->checkout()->get_checkout_fields('shipping');
+    
+    // Unimos ambos arrays de campos para procesarlos
+    $all_fields = array_merge($billing_fields, $shipping_fields);
+
+    foreach (array_keys($all_fields) as $key) {
+        if (isset($_POST[$key])) {
+            update_user_meta($user_id, $key, wc_clean(wp_unslash($_POST[$key])));
+        }
+    }
+}
+
+/**
+ * Crea un shortcode [mis_pedidos_pagos] para mostrar los pedidos del usuario.
+ */
+add_shortcode('mis_pedidos_pagos', 'mostrar_shortcode_pedidos_usuario');
+function mostrar_shortcode_pedidos_usuario() {
+    // Primero, comprobamos si el usuario ha iniciado sesión.
+    if (!is_user_logged_in()) {
+        return 'Por favor, inicia sesión para ver tus pedidos.';
+    }
+
+    // Obtenemos el ID del usuario actual.
+    $user_id = get_current_user_id();
+
+    // Obtenemos todos los pedidos del cliente.
+    $customer_orders = wc_get_orders(array(
+        'customer_id' => $user_id,
+        'limit'       => -1 // -1 para obtener todos los pedidos.
+    ));
+
+    // Si no hay pedidos, mostramos un mensaje.
+    if (empty($customer_orders)) {
+        return 'Aún no has realizado ningún pedido.';
+    }
+
+    // Usamos un buffer de salida para construir nuestro HTML.
+    ob_start();
+    ?>
+    
+    <div class="woocommerce-orders-table-wrapper">
+        <table class="shop_table shop_table_responsive woocommerce-orders-table">
+            <thead>
+                <tr>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-number"><span class="nobr">Pedido</span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-date"><span class="nobr">Fecha</span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span class="nobr">Estado</span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-total"><span class="nobr">Total</span></th>
+                    <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-actions"><span class="nobr">Acciones</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($customer_orders as $order) : ?>
+                    <tr class="woocommerce-orders-table__row order">
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number" data-title="Pedido">
+                            #<?php echo $order->get_order_number(); ?>
+                        </td>
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Fecha">
+                            <time datetime="<?php echo esc_attr($order->get_date_created()->date('c')); ?>"><?php echo esc_html(wc_format_datetime($order->get_date_created())); ?></time>
+                        </td>
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status" data-title="Estado">
+                            <?php echo esc_html(wc_get_order_status_name($order->get_status())); ?>
+                        </td>
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total">
+                            <?php echo wp_kses_post($order->get_formatted_order_total()); ?>
+                        </td>
+                        <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-actions" data-title="Acciones">
+                            <a href="<?php echo esc_url($order->get_view_order_url()); ?>" class="button wc-forward">
+                                Ver
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <?php
+    // Devolvemos el contenido del buffer y lo limpiamos.
+    return ob_get_clean();
+}

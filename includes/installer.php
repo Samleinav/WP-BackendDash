@@ -6,6 +6,20 @@ class WPBackendDashInstaller {
         global $wpdb;
 
         $tabla = $wpdb->prefix . 'ai_interviews';
+
+        // Verifica si la tabla ya existe
+        $existe = $wpdb->get_var(
+            $wpdb->prepare(
+                "SHOW TABLES LIKE %s",
+                $tabla
+            )
+        );
+
+        if ($existe === $tabla) {
+            // Ya existe, no hacer nada
+            return;
+        }
+        
         $charset = $wpdb->get_charset_collate();
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
