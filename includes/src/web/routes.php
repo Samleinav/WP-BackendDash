@@ -45,12 +45,8 @@ function custom_parse_and_set_query_var() {
         if (  isset($_GET["page"])  && isset($_GET["custom_order_serial"])
 			&& $_GET["page"]  =="adminify_admin_page_order_view" 
 			&& is_admin() ) {
-			
-			echo $request_uri;
-			exit;
-			
+            // Verifica si el número de serie está presente en la URL
             if ( !empty( $_GET["custom_order_serial"] ) ) {
-                $sequential_order_number = $_GET["custom_order_serial"]);
 
                 // Ahora, inyecta este valor en los query_vars de WordPress.
                 // Accede a la instancia global de WP_Query

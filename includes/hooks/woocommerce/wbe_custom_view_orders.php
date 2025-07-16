@@ -13,40 +13,15 @@ add_filter( 'query_vars', 'custom_order_query_vars' );
 add_shortcode("wc_custom_backend_order_view", "custom_backend_order_content_view" );
 function custom_backend_order_content_view() {
 	
-  	$sequential_order_number = null;
-	$request_uri = $_SERVER['REQUEST_URI'];
-	if ( preg_match( '#/center/orders/([0-9a-zA-Z-]+)/?#', $request_uri, $matches ) ) {
-        if ( isset( $matches[1] ) && ! empty( $matches[1] ) ) {
-            $sequential_order_number = sanitize_text_field( $matches[1] );
-        }
-    }
-	 global $wp_query; // Accede a la instancia global de WP_Query
 
-    echo '<div class="wrap">';
-    echo '<h1>Variables de Consulta ($wp_query->query_vars)</h1>';
+    // Obtiene el número de orden secuencial desde la URL
+	$sequential_order_number = get_query_var( 'custom_order_serial' );
 
-    if ( ! empty( $wp_query->query_vars ) ) {
-        echo '<pre>';
-        print_r( $wp_query->query_vars );
-        echo '</pre>';
-    } else {
-        echo '<p>No se encontraron variables de consulta en $wp_query->query_vars.</p>';
-    }
-
-    echo '</div>';
-	echo $request_uri;
-	 echo '///////////';
-	echo $sequential_order_number ;
-	exit;
-	
     // Asegúrate de que el parámetro 'custom_order_serial' exista y no esté vacío
     if ( empty( $sequential_order_number ) ) {
         echo '<div class="wrap"><h1>Detalles de la Orden</h1><p>Por favor, proporciona un número de orden válido.</p></div>';
         return;
     }
-
-    // Sanitizar el número de orden secuencial de la URL
-    $sequential_order_number = sanitize_text_field( wp_unslash( $_GET['custom_order_serial'] ) );
 
     // *** IMPORTANTE: Reemplaza '_order_number' con la meta key real de tu plugin de números de orden secuenciales ***
     // Ejemplos comunes: '_wc_order_number', '_webtoffee_order_number', '_custom_order_number'
