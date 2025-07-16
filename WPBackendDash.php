@@ -64,7 +64,7 @@ add_action( 'plugins_loaded', function() {
         'plugin_file'   => 'WP-BackendDash/WPBackendDash.php',  // plugin_basename(__FILE__)
         'slug'          => 'wp-backenddash',                     // en minúsculas, sin espacios
         'name'          => 'WP Backend Dash',                     // same as the VERSION constant above
-        'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/includes/index.json',  // GitHub or private server
+        'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/includes/index.json',  // GitHub or private server
         //'github_token'  => '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',             // optional
         //'server'      => 'https://updater.reallyusefulplugins.com/u/',
         // 'textdomain' is omitted, so the helper will automatically use 'slug'
