@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP Backend Dash
 Description: Backend dashboard y control de entrevistas para AI.
-Version: 1.0
+Version: 1.0.1
 Author: SamLeiNav
 GitHub Plugin URI: https://github.com/Samleinav/WP-BackendDash
 */
