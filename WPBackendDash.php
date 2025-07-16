@@ -63,7 +63,8 @@ add_action( 'plugins_loaded', function() {
     $updater_config = [
         'plugin_file'   => plugin_basename(__FILE__),  // plugin_basename(__FILE__)
         'slug'          => 'wp-backenddash',                     // en minúsculas, sin espacios
-        'name'          => 'wp-backenddash',                     // same as the VERSION constant above
+        'name'          => 'WP Backend Dash',       
+        'version'       => WBE_PLUGIN_VERSION,               // same as the VERSION constant above
         'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/includes/index.json',  // GitHub or private server
         //'github_token'  => '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',             // optional
         //'server'      => 'https://updater.reallyusefulplugins.com/u/',
