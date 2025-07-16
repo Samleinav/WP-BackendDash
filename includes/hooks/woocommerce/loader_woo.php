@@ -7,7 +7,7 @@
     }
     else {
         // Cargar las funciones de WooCommerce
-        require_once plugin_dir_path( __FILE__ ) . 'woocommerce/wbe_custom_view_orders.php';
-        require_once plugin_dir_path( __FILE__ ) . 'woocommerce/wbe_woocommerce_hooks.php';
-        require_once plugin_dir_path( __FILE__ ) . 'woocommerce/wbe_woo_redirect.php';
+        require_once plugin_dir_path( __FILE__ ) . 'wbe_custom_view_orders.php';
+        require_once plugin_dir_path( __FILE__ ) . 'wbe_woocommerce_hooks.php';
+        require_once plugin_dir_path( __FILE__ ) . 'wbe_woo_redirect.php';
     }
