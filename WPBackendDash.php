@@ -61,7 +61,7 @@ add_action( 'plugins_loaded', function() {
 
     // 2) Build a single $updater_config array:
     $updater_config = [
-        'plugin_file'   => 'WP-BackendDash/WPBackendDash.php',  // plugin_basename(__FILE__)
+        'plugin_file'   => plugin_basename(__FILE__),  // plugin_basename(__FILE__)
         'slug'          => 'wp-backenddash',                     // en minúsculas, sin espacios
         'name'          => 'WP Backend Dash',                     // same as the VERSION constant above
         'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/includes/index.json',  // GitHub or private server
