@@ -55,6 +55,7 @@ WPBackendDash::instance();
 // ──────────────────────────────────────────────────────────────────────────
 add_action( 'plugins_loaded', function() {
 
+    return; // Descomentar para desactivar el updater
     // 1) Load our universal drop-in. Because that file begins with "namespace UUPD\V1;",
     //    both the class and the helper live under UUPD\V1.
     require_once __DIR__ . '/includes/helpers/updater.php';
@@ -67,7 +68,7 @@ add_action( 'plugins_loaded', function() {
         'key'         => 'testkey123',        
         'version'       => WBE_PLUGIN_VERSION,               // same as the VERSION constant above
         'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/includes/index.json',  // GitHub or private server
-        //'github_token'  => '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',             // optional
+        'github_token'  => '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',             // optional
         //'server'      => 'https://updater.reallyusefulplugins.com/u/',
         // 'textdomain' is omitted, so the helper will automatically use 'slug'
         
