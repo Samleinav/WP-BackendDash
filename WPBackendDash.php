@@ -61,12 +61,11 @@ add_action( 'plugins_loaded', function() {
 
     // 2) Build a single $updater_config array:
     $updater_config = [
-        'plugin_file' => plugin_basename( __FILE__ ),             // e.g. "simply-static-export-notify/simply-static-export-notify.php"
-        'slug'        => 'wbe-plugin',           // must match your updater‐server slug
-        'name'        => 'wbe-plugin',         // human‐readable plugin name
-        'version'     => WBE_PLUGIN_VERSION, // same as the VERSION constant above
-        'server'        => 'https://github.com/Samleinav/WP-BackendDash',  // GitHub or private server
-        'github_token'  => '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',             // optional
+        'plugin_file'   => 'WP-BackendDash/WPBackendDash.php',  // plugin_basename(__FILE__)
+        'slug'          => 'wp-backenddash',                     // en minúsculas, sin espacios
+        'name'          => 'WP Backend Dash',                     // same as the VERSION constant above
+        'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/includes/index.json',  // GitHub or private server
+        //'github_token'  => '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',             // optional
         //'server'      => 'https://updater.reallyusefulplugins.com/u/',
         // 'textdomain' is omitted, so the helper will automatically use 'slug'
         

@@ -1,0 +1,9 @@
+{
+  "wp-backenddash": {
+    "version": "1.0.3",
+    "url": "https://github.com/Samleinav/WP-BackendDash/archive/refs/tags/wordpress.zip",
+    "changelog": "Added new features",
+    "requires": "5.0",
+    "tested": "6.5"
+  }
+}
