@@ -9,11 +9,8 @@ GitHub Plugin URI: https://github.com/Samleinav/WP-BackendDash
 
 defined('ABSPATH') || exit;
 
-// Define our plugin version
-if ( ! defined( 'WBE_PLUGIN_VERSION' ) ) {
-    define('WBE_PLUGIN_VERSION', '1.0.2');
-}
 
+define('WBE_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 final class WPBackendDash {
     private static $instance = null;

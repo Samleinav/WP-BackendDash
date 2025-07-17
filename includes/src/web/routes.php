@@ -1,4 +1,7 @@
 <?php
+
+
+
 add_action('init', function () {
     //global $wp_rewrite;
 	
@@ -48,6 +51,9 @@ function custom_parse_and_set_query_var() {
             // Verifica si el número de serie está presente en la URL
             if ( !empty( $_GET["custom_order_serial"] ) ) {
 
+                echo $_GET["custom_order_serial"];
+                exit;
+
                 // Ahora, inyecta este valor en los query_vars de WordPress.
                 // Accede a la instancia global de WP_Query
                 global $wp_query;
@@ -74,3 +80,17 @@ function custom_parse_and_set_query_var() {
         }
 }
 
+
+class WPERoutes {
+    protected static $callbacks = [];
+
+    public static function register(callable $callback) {
+        self::$callbacks[] = $callback;
+    }
+
+    public static function boot() {
+        foreach (self::$callbacks as $callback) {
+            call_user_func($callback);
+        }
+    }
+}
