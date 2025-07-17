@@ -7,15 +7,15 @@ function custom_order_query_vars( $vars ) {
 }
 add_filter( 'query_vars', 'custom_order_query_vars' );
 
+
 /**
  * Función de callback que renderiza el contenido de la página de vista de orden.
  */
 add_shortcode("wc_custom_backend_order_view", "custom_backend_order_content_view" );
 function custom_backend_order_content_view() {
-	
 
     // Obtiene el número de orden secuencial desde la URL
-	$sequential_order_number = get_query_var( 'custom_order_serial' );
+	$sequential_order_number = isset( $_SESSION['custom_order_serial'] ) ? $_SESSION['custom_order_serial'] : null;
 
     // Asegúrate de que el parámetro 'custom_order_serial' exista y no esté vacío
     if ( empty( $sequential_order_number ) ) {

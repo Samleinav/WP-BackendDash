@@ -51,34 +51,15 @@ function custom_parse_and_set_query_var() {
             // Verifica si el número de serie está presente en la URL
             if ( !empty( $_GET["custom_order_serial"] ) ) {
 
-                echo $_GET["custom_order_serial"];
-                exit;
-
-                // Ahora, inyecta este valor en los query_vars de WordPress.
-                // Accede a la instancia global de WP_Query
-                global $wp_query;
-
-                // Si $wp_query aún no está inicializado, es un poco temprano.
-                // La forma más robusta es directamente a través del hook 'request'.
-                // Pero si 'init' funciona para tu preg_match, podemos intentarlo aquí.
-                // Sin embargo, 'parse_request' es más apropiado para manipular query_vars.
-
-                // Mejor forma de asegurar que se establezca: directamente en $_GET para que WordPress lo recoja
-                // si no tienes un filtro en 'parse_request'.
-                // O usa $wp->query_vars = array_merge(...) si estás en 'parse_request'.
-
-                // Si estás en 'init', puedes establecerlo en $_GET. WordPress lo procesará.
-                // Ten en cuenta que esto es un poco una "trampa", pero funcional si necesitas mantener .htaccess.
-                // $_GET['custom_order_serial'] = $sequential_order_number;
-
-                // Alternativamente, forzarlo en los query_vars si $wp_query ya existe.
-                // Es menos fiable que usar el hook 'parse_request' para esto.
-                if ( isset( $wp_query ) && $wp_query instanceof WP_Query ) {
-                    $wp_query->set( 'custom_order_serial', $sequential_order_number );
+                if ( ! session_id() ) { // Solo inicia la sesión si no hay una activa
+                    session_start();
                 }
+
+                 $_SESSION['custom_order_serial'] = sanitize_text_field( $_GET['custom_order_serial'] );
             }
         }
 }
+
 
 
 class WPERoutes {
