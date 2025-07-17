@@ -53,28 +53,9 @@ WPBackendDash::instance();
 // ──────────────────────────────────────────────────────────────────────────
 //  Updater
 // ──────────────────────────────────────────────────────────────────────────
-add_action( 'plugins_loaded', function() {
-
-    return; // Descomentar para desactivar el updater
-    // 1) Load our universal drop-in. Because that file begins with "namespace UUPD\V1;",
-    //    both the class and the helper live under UUPD\V1.
-    require_once __DIR__ . '/includes/helpers/updater.php';
-
-    // 2) Build a single $updater_config array:
-    $updater_config = [
-        'plugin_file'   => plugin_basename(__FILE__),  // plugin_basename(__FILE__)
-        'slug'          => 'wp-backenddash',                     // en minúsculas, sin espacios
-        'name'          => 'WP Backend Dash',
-        'key'         => 'testkey123',        
-        'version'       => WBE_PLUGIN_VERSION,               // same as the VERSION constant above
-        'server'        => 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/includes/index.json',  // GitHub or private server
-        'github_token'  => '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',             // optional
-        //'server'      => 'https://updater.reallyusefulplugins.com/u/',
-        // 'textdomain' is omitted, so the helper will automatically use 'slug'
-        
-    ];
-
-    // 3) Call the helper in the UUPD\V1 namespace:
-    \UUPD\V1\UUPD_Updater_V1::register( $updater_config );
-}, 1 );
-
+require_once plugin_dir_path(__FILE__) . 'includes/helpers/updater.php';
+add_action('init', function () {
+    if (is_admin()) {
+        new WPBackendDash_Updater(__FILE__);
+    }
+});
