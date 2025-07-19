@@ -1,8 +1,8 @@
 <?php
+namespace WPBackendDash\Helpers;
 // Incluir este código en tu plugin principal WPBackendDash.php o en un archivo incluido por él
 
-
-class WPBackendDash_Updater {
+class WBEUpdater {
     private $plugin_file;
     private $plugin_slug;
     private $github_raw_url = 'https://raw.githubusercontent.com/Samleinav/WP-BackendDash/main/WPBackendDash.php';
@@ -68,5 +68,11 @@ class WPBackendDash_Updater {
         }
 
         return $result;
+    }
+
+    public static function init($plugin_file) {
+        add_action('init', function () use ($plugin_file) {
+            $updater = new self($plugin_file);
+        });
     }
 }

@@ -1,5 +1,24 @@
 <?php
 
+use WPBackendDash\Helpers\WBERoute;
+
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/testpage/?$',
+    '/wp-admin/admin.php?page=adminify_admin_page_testpage',
+    'QSA,NC,L'
+);
+
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/orders/?$',
+    '/wp-admin/admin.php?page=adminify_admin_page_orders',
+    'QSA,NC,L'
+);
+
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/orders/([0-9a-zA-Z-]+)/?$',
+    '/wp-admin/admin.php?page=adminify_admin_page_order_view&custom_order_serial=$2',
+    'QSA,NC,L'
+);
 
 
 add_action('init', function () {
@@ -40,9 +59,6 @@ function custom_parse_and_set_query_var() {
     // Verifica que estamos en admin y que la URL se parece a la que manejamos
     // Puedes refinar esta condición si es necesario.
     // $_GET['page'] verificará que estamos en tu página de administración específica.
-   
-        $request_uri = $_SERVER['REQUEST_URI'];
-        $sequential_order_number = null;
 	
         // Regex para capturar el número de serie de la URL amigable
         if (  isset($_GET["page"])  && isset($_GET["custom_order_serial"])
@@ -61,17 +77,3 @@ function custom_parse_and_set_query_var() {
 }
 
 
-
-class WPERoutes {
-    protected static $callbacks = [];
-
-    public static function register(callable $callback) {
-        self::$callbacks[] = $callback;
-    }
-
-    public static function boot() {
-        foreach (self::$callbacks as $callback) {
-            call_user_func($callback);
-        }
-    }
-}

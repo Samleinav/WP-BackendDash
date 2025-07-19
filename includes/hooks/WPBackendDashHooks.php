@@ -1,6 +1,5 @@
 <?php
-
-defined('ABSPATH') || exit;
+namespace WPBackendDash\Hooks;
 
 class WPBackendDashHooks {
     public static function init() {

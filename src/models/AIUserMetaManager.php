@@ -1,4 +1,5 @@
 <?php
+namespace WPBackendDash\Models;
 /**
  * Clase para manejar los metadatos del usuario relacionados con AI.
  */
