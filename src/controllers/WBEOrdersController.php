@@ -3,6 +3,7 @@
 namespace WPBackendDash\Controllers;
 
 use WPBackendDash\Helpers\ControllerHelper;
+use WPBackendDash\Helpers\WBERequest;
 
 class WBEOrdersController extends ControllerHelper{
     /**

@@ -2,6 +2,8 @@
 
 namespace WPBackendDash\Helpers;
 
+use WPBackendDash\Helpers\WBECallback;
+
 class WBEPage {
     private static array $pages = [];
 
@@ -47,7 +49,7 @@ class WBEPage {
                     $page['title'],
                     $page['capability'],
                     $page['slug'],
-                    $page['callback'],
+                    WBECallback::resolve($page['callback']),
                     $page['icon'],
                     $page['position']
                 );
