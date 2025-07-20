@@ -9,5 +9,5 @@
         // Cargar las funciones de WooCommerce
         require_once plugin_dir_path( __FILE__ ) . 'wbe_woocommerce_hooks.php';
         require_once plugin_dir_path( __FILE__ ) . 'wbe_woo_redirect.php';
-        require_once plugin_dir_path( __FILE__ ) . 'wbe_woo_edit_checkout_form.php';
+        require_once plugin_dir_path( __FILE__ ) . 'wbe_edit_chekout_form.php';
     }

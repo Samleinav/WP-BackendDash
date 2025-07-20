@@ -3,6 +3,11 @@
 use WPBackendDash\Helpers\WBERoute;
 
 WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/rooms/?$',
+    '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms',
+);
+
+WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/orders/?$',
     '/wp-admin/admin.php?page=wbe_admin_page_orders',
     'QSA,NC,L'
@@ -10,7 +15,7 @@ WBERoute::route(
 
 WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/orders/([0-9a-zA-Z-]+)/?$',
-    '/wp-admin/admin.php?page=adminify_admin_page_order_view&custom_order_serial=$2',
+    '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms&custom_order_serial=$2',
     'QSA,NC,L'
 );
 

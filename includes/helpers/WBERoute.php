@@ -38,6 +38,30 @@ class WBERoute {
 
         self::$routes[] = $normalized;
     }
+    /**
+     * Obtiene todas las rutas registradas
+     */
+    public static function getRoutes() {
+        return self::$routes;
+    }
+
+    public static function matchCurrentRoute() {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        foreach (self::$routes as $route) {
+            $pattern = '#'. $route['regex'] .'#';
+
+            if (preg_match($pattern, $uri, $matches)) {
+                array_shift($matches); // quitamos el match completo
+                return [
+                    'route' => $route,
+                    'matches' => array_values($matches), // $1, $2, etc.
+                ];
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Normaliza los flags para comparación (orden alfabético)
