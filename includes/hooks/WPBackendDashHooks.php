@@ -6,6 +6,8 @@ class WPBackendDashHooks {
         require_once plugin_dir_path(__FILE__) . 'wbe_admin_footer.php';
         require_once plugin_dir_path(__FILE__) . 'woocommerce/loader_woo.php';
         require_once plugin_dir_path(__FILE__) . 'wbe_remove_backend_notices.php';
+        require_once plugin_dir_path(__FILE__) . 'wbe_capabilities_client.php';
+
     }
 
     public static function add_rewrite_rules() {

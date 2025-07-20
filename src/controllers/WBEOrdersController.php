@@ -32,7 +32,7 @@ class WBEOrdersController extends ControllerHelper{
      * Renderiza la vista de una orden específica.
      * 
      */
-    public function viewOrder(){
+    public function view_order(){
        
         // Obtiene el número de orden secuencial desde la URL
         $sequential_order_number = isset( $_SESSION['custom_order_serial'] ) ? $_SESSION['custom_order_serial'] : '';

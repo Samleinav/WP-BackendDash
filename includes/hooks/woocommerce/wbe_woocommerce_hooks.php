@@ -106,31 +106,3 @@ function guardar_campos_woocommerce_en_perfil_v2($user_id) {
         }
     }
 }
-
-/**
- * Crea un shortcode [mis_pedidos_pagos] para mostrar los pedidos del usuario.
- */
-add_shortcode('mis_pedidos_pagos', 'mostrar_shortcode_pedidos_usuario');
-function mostrar_shortcode_pedidos_usuario() {
-    // Primero, comprobamos si el usuario ha iniciado sesión.
-    if (!is_user_logged_in()) {
-        return 'Por favor, inicia sesión para ver tus pedidos.';
-    }
-
-    // Obtenemos el ID del usuario actual.
-    $user_id = get_current_user_id();
-
-    // Obtenemos todos los pedidos del cliente.
-    $customer_orders = wc_get_orders(array(
-        'customer_id' => $user_id,
-        'limit'       => -1 // -1 para obtener todos los pedidos.
-    ));
-
-    // Si no hay pedidos, mostramos un mensaje.
-    if (empty($customer_orders)) {
-        return 'Aún no has realizado ningún pedido.';
-    }
-
-    // Usamos un buffer de salida para construir nuestro HTML.
-    ViewerHelper::view('woocommerce/my_orders.php', array('orders' => $customer_orders));
-}

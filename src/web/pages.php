@@ -1,19 +1,25 @@
 <?php
-
 namespace WPBackendDash\Web;
 
 use WPBackendDash\Helpers\WBEPage;
-
 use WPBackendDash\Controllers\WBEOrdersController;
 
-//require_once WBE_PLUGIN_PATH. 'includes/src/Controllers/WBEOrdersController.php';
-
 WBEPage::add(
-    'wbe_admin_page_testpage',
-    'Test Page',
+    'wbe_admin_page_orders',
+    __('Payments', 'wp-backend-dash'),
     [WBEOrdersController::init(), 'index'],
     'dashicons-admin-generic',
-    'manage_options',
-    100,
+    'wbe_view_orders',
+    4,
+    true
+);
+
+WBEPage::add(
+    'wbe_admin_page_order_view',
+     __('Order Details', 'wp-backend-dash'),
+    [WBEOrdersController::init(), 'order_view'],
+    'dashicons-admin-generic',
+    'wbe_view_order_details',
+    5,
     false
 );

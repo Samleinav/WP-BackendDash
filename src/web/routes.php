@@ -3,14 +3,8 @@
 use WPBackendDash\Helpers\WBERoute;
 
 WBERoute::route(
-    '^([0-9a-zA-Z_-]+/)?center/testpage/?$',
-    '/wp-admin/admin.php?page=adminify_admin_page_testpage',
-    'QSA,NC,L'
-);
-
-WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/orders/?$',
-    '/wp-admin/admin.php?page=adminify_admin_page_orders',
+    '/wp-admin/admin.php?page=wbe_admin_page_orders',
     'QSA,NC,L'
 );
 
