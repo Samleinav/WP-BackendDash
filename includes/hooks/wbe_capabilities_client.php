@@ -5,7 +5,9 @@ function add_client_capabilities() {
     $role = get_role('client');
     if ($role) {
         $role->add_cap('wbe_view_orders');
-        $role->add_cap('wbe_view_order_details');
+        $role->add_cap('wbe_view_order_details');}
+        $role->add_cap('wbe_view_chats_rooms');
+        $role->add_cap('wbe_view_chats_rooms_details');
         // Agrega más capacidades según sea necesario
     }
 }
