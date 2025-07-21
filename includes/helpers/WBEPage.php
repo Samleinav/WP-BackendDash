@@ -3,6 +3,7 @@
 namespace WPBackendDash\Helpers;
 
 use WPBackendDash\Helpers\WBECallback;
+use WPBackendDash\Helpers\WBERoute;
 
 class WBEPage {
     private static array $pages = [];
@@ -42,14 +43,27 @@ class WBEPage {
      * Inicializa las páginas registradas y aplica su visibilidad.
      */
     public static function init(): void {
+
+        
+
         add_action('admin_menu', function () {
+
+            $callback = function () {
+                // Aquí podrías agregar lógica adicional si es necesario
+            };
+
+            $match = WBERoute::matchCurrentRoute();
+        
             foreach (self::$pages as $page) {
+                if ($match && isset($match["route"]) && str_contains($match["route"]["redirect"], $page['slug'])) {
+                    $callback = WBECallback::resolve($page['callback']);
+                }
                 add_menu_page(
                     $page['title'],
                     $page['title'],
                     $page['capability'],
                     $page['slug'],
-                    WBECallback::resolve($page['callback']),
+                    $callback,
                     $page['icon'],
                     $page['position']
                 );

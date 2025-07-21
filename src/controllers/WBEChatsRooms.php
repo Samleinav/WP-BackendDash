@@ -18,4 +18,19 @@ class WBEChatsRooms extends ControllerHelper {
         // Lógica para mostrar los detalles de una sala de chat específica
         echo "Detalles de la sala de chat: " . esc_html($room_id);
     }
+
+    public function create() {
+        // Lógica para crear una nueva sala de chat
+        echo "Formulario para crear una nueva sala de chat";
+    }
+
+    public function edit($room_id) {
+        // Lógica para editar una sala de chat existente
+        echo "Formulario para editar la sala de chat: " . esc_html($room_id);
+    }
+
+    public function delete($room_id) {
+        // Lógica para eliminar una sala de chat
+        echo "Sala de chat eliminada: " . esc_html($room_id);
+    }
 }

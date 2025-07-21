@@ -14,14 +14,14 @@ WBERoute::route(
 );
     WBERoute::route(
         'center.rooms.view',
-        'center/rooms/{custom_room_id}/view',
-        '/wp-admin/admin.php?page=wbe_admin_page_chats_room_view&custom_room_id=$2',
+        'center/rooms/{$room_id}/view',
+        '/wp-admin/admin.php?page=wbe_admin_page_chats_room_view&$room_id=$2',
     );
 
     WBERoute::route(
         'center.rooms.edit',
-        'center/rooms/{custom_room_id}/edit',
-        '/wp-admin/admin.php?page=wbe_admin_page_chats_room_edit&custom_room_id=$2',
+        'center/rooms/{$room_id}/edit',
+        '/wp-admin/admin.php?page=wbe_admin_page_chats_room_edit&$room_id=$2',
     );
 
     WBERoute::route(
