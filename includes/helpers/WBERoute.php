@@ -54,22 +54,28 @@ class WBERoute {
             $pattern = '#^' . $route['regex'] . '$#';
 
             if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches); // quitamos el full match
+               array_shift($matches); // Quita el resultado completo
 
-                // Extraer variables de `pretty`
-                preg_match_all('/{([^}]+)}/', $route['pretty'], $varMatches);
-                $varNames = $varMatches[1] ?? [];
+				// --- LA LÍNEA CLAVE ---
+				// Filtra las capturas vacías y re-indexa el array para alinear los parámetros.
+				// Esto elimina los 'placeholders' de los grupos opcionales que no coincidieron.
+				$matches = array_values(array_filter($matches, 'strlen'));
 
-                $named = [];
-                foreach ($varNames as $i => $var) {
-                    $named[$var] = $matches[$i] ?? null;
-                }
+				// Extraer nombres de la URL 'pretty'
+				preg_match_all('/\{(\w+)\}/', $route['pretty'] ?? '', $nameMatches);
+				$varNames = $nameMatches[1];
+
+				// Combinar nombres con valores ya limpios
+				$named = [];
+				foreach ($varNames as $i => $name) {
+					$named[$name] = $matches[$i] ?? null;
+				}
 
                 return [
-                    'route' => $route,
-                    'params' => $named, 
-                    'matches' => $matches,
-                ];
+					'route'   => $route,
+					'params'  => $named, // Ahora ['custom_order_serial' => 'O000000000016514']
+					'matches' => $matches,
+				];
             }
         }
 
