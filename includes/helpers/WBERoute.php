@@ -8,7 +8,7 @@ class WBERoute {
     protected static $sectionStart = '# BEGIN WBE CustomRoutes';
     protected static $sectionEnd   = '# END WBE CustomRoutes';
     protected static $htaccessPath;
-
+    protected static $paramCounter = 0;
     /**
      * Establece la ruta del archivo .htaccess si se necesita
      */
@@ -19,18 +19,36 @@ class WBERoute {
     /**
      * Agrega una ruta si no existe ya.
      */
-    public static function route(string $name, $regex, $redirect, $pretty = null, $flags = 'QSA,NC,L') {
+    public static function route(string $name, string $route, string $redirect, array $options = [])
+    { 
+        
+        $pretty = null;
+        $regex = $route;
+
+        // CAMBIO: Capturamos la opción de prefijo
+        $usePrefix = $options['prefix'] ?? true;
+
+        if (strpos($route, '{') !== false) {
+            $pretty = $route;
+            // CAMBIO: Pasamos la opción de prefijo al conversor
+            list($regex, $redirect) = self::convertPrettyToRegex($pretty, $redirect, $usePrefix);
+        } else {
+            // CAMBIO: También aplicamos el prefijo a las rutas sin placeholders
+            $regex = '^' . ($usePrefix ? '([0-9a-zA-Z_-]+/)?' : '') . trim($route, '/') . '/?$';
+        }
+        
         $normalized = [
-            'name' => $name, // Nombre descriptivo de la ruta
-            'regex' => trim($regex),
-            'redirect' => trim($redirect),
-            'pretty' => $pretty,
-            'flags' => self::normalizeFlags($flags),
+            'name'     => $name,
+            'regex'    => $regex,
+            'redirect' => $redirect,
+            'pretty'   => $pretty ?? $route,
+            'flags'    => self::normalizeFlags($options['flags'] ?? 'QSA,NC,L'),
         ];
 
         // Verifica si ya fue registrada (ignora el orden de flags)
         foreach (self::$routes as $route) {
             if (
+                $route['name'] === $name &&
                 $route['regex'] === $normalized['regex'] &&
                 $route['redirect'] === $normalized['redirect'] &&
                 self::normalizeFlags($route['flags']) === $normalized['flags']
@@ -41,6 +59,38 @@ class WBERoute {
 
         self::$routes[] = $normalized;
         self::$routesNamed[$name] = $normalized;
+    }
+
+    /**
+     * Convierte una ruta "pretty" en un regex y adapta el redirect.
+     *
+     * @param string $pretty
+     * @param string $redirect* 
+     * @param bool $addPrefix Si es true, añade el prefijo y ajusta los índices de captura.
+     */
+    private static function convertPrettyToRegex(string $pretty, string $redirect, bool $addPrefix): array
+    {
+        // CAMBIO: El contador de parámetros empieza en 1 si hay prefijo, si no en 0.
+        // Esto es CRUCIAL para que los $1, $2 se asignen correctamente.
+        self::$paramCounter = $addPrefix ? 1 : 0;
+        $paramMap = [];
+
+        $regex = preg_replace_callback('/\{(\w+)\}/', function ($matches) use (&$paramMap) {
+            self::$paramCounter++;
+            $paramName = $matches[1];
+            $paramMap[$paramName] = self::$paramCounter;
+            return '([^/]+)';
+        }, $pretty);
+
+        // CAMBIO: Añade el prefijo al inicio del regex si se solicita.
+        $prefixRegex = $addPrefix ? '([0-9a-zA-Z_-]+/)?' : '';
+        $regex = '^' . $prefixRegex . trim($regex, '/') . '/?$';
+
+        foreach ($paramMap as $name => $index) {
+            $redirect = str_replace('{' . $name . '}', '$' . $index, $redirect);
+        }
+
+        return [$regex, $redirect];
     }
 
      /**
