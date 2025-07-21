@@ -43,6 +43,11 @@ class WBECallback
 
     public static function resolve($callback)
     {
+        $match = WBERoute::matchCurrentRoute();
+        if (!$match) {
+            return '__return_null'; // o devolver una función vacía
+        }
+
         if (is_array($callback) && is_string($callback[0])) {
             $callback[0] = new $callback[0];
         }
@@ -51,12 +56,10 @@ class WBECallback
             ? new \ReflectionMethod($callback[0], $callback[1])
             : new \ReflectionFunction($callback);
 
-        $match = WBERoute::matchCurrentRoute();
-        $matches = $match['matches'] ?? [];
+        $params = $match['params'] ?? [];
 
-        return function () use ($callback, $reflection, $matches) {
+        return function () use ($callback, $reflection, $params) {
             $args = [];
-            $i = 0;
 
             foreach ($reflection->getParameters() as $param) {
                 $type = $param->getType();
@@ -64,18 +67,11 @@ class WBECallback
 
                 if ($type && !$type->isBuiltin()) {
                     $args[] = new ($type->getName())();
+                } elseif (isset($params[$name])) {
+                    $args[] = $params[$name];
                 } else {
-                    $fromRequest = WBERequest::get($name);
-                    if ($fromRequest !== null) {
-                        $args[] = $fromRequest;
-                    } elseif (isset($matches[$i])) {
-                        $args[] = $matches[$i]; // $1, $2, etc.
-                    } else {
-                        $args[] = null;
-                    }
+                    $args[] = WBERequest::get($name) ?? null;
                 }
-
-                $i++;
             }
 
             return call_user_func_array($callback, $args);

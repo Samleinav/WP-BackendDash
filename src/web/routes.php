@@ -4,6 +4,7 @@ use WPBackendDash\Helpers\WBERoute;
 
 WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/rooms/?$',
+    
     '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms',
 );
 
@@ -16,7 +17,7 @@ WBERoute::route(
 WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/orders/([0-9a-zA-Z-]+)/?$',
     '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms&custom_order_serial=$2',
-    'QSA,NC,L'
+    'center/orders/{custom_order_serial}'
 );
 
 

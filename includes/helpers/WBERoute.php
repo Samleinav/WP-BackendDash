@@ -18,10 +18,11 @@ class WBERoute {
     /**
      * Agrega una ruta si no existe ya.
      */
-    public static function route($regex, $redirect, $flags = 'QSA,NC,L') {
+    public static function route($regex, $redirect, $pretty = null, $flags = 'QSA,NC,L') {
         $normalized = [
             'regex' => trim($regex),
             'redirect' => trim($redirect),
+            'pretty' => $pretty,
             'flags' => self::normalizeFlags($flags),
         ];
 
@@ -45,17 +46,29 @@ class WBERoute {
         return self::$routes;
     }
 
-    public static function matchCurrentRoute() {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    public static function matchCurrentRoute()
+    {
+        $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
         foreach (self::$routes as $route) {
-            $pattern = '#'. $route['regex'] .'#';
+            $pattern = '#^' . $route['regex'] . '$#';
 
             if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches); // quitamos el match completo
+                array_shift($matches); // quitamos el full match
+
+                // Extraer variables de `pretty`
+                preg_match_all('/{([^}]+)}/', $route['pretty'], $varMatches);
+                $varNames = $varMatches[1] ?? [];
+
+                $named = [];
+                foreach ($varNames as $i => $var) {
+                    $named[$var] = $matches[$i] ?? null;
+                }
+
                 return [
                     'route' => $route,
-                    'matches' => array_values($matches), // $1, $2, etc.
+                    'params' => $named, 
+                    'matches' => $matches,
                 ];
             }
         }

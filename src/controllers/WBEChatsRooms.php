@@ -9,10 +9,9 @@ class WBEChatsRooms extends ControllerHelper {
         return new self();
     }
 
-    public function index() {
+    public function index($custom_order_serial) {
         // Lógica para mostrar la lista de salas de chat
-        $room_id = WBERequest::get('room_id', null);
-        echo WBERequest::fullUrl() . "<br>" . "Room ID: " . esc_html($room_id);
+        echo WBERequest::fullUrl() . "<br>" . "custom_order_serial ID: " . esc_html($custom_order_serial);
     }
 
     public function room_view($room_id) {

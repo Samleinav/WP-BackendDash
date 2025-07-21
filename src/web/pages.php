@@ -26,9 +26,9 @@ WBEPage::add(
 );
 
 WBEPage::add(
-    'wbe_admin_page_order_view',
+    'wbe_admin_page_view_order',
      __('Order Details', 'wp-backend-dash'),
-    [WBEOrdersController::init(), 'order_view'],
+    [WBEOrdersController::init(), 'view_order'],
     'dashicons-admin-generic',
     'wbe_view_order_details',
     5,
