@@ -4,6 +4,7 @@ namespace WPBackendDash\Helpers;
 
 class WBERoute {
     protected static $routes = [];
+    protected static $routesNamed = [];
     protected static $sectionStart = '# BEGIN WBE CustomRoutes';
     protected static $sectionEnd   = '# END WBE CustomRoutes';
     protected static $htaccessPath;
@@ -18,8 +19,9 @@ class WBERoute {
     /**
      * Agrega una ruta si no existe ya.
      */
-    public static function route($regex, $redirect, $pretty = null, $flags = 'QSA,NC,L') {
+    public static function route(string $name, $regex, $redirect, $pretty = null, $flags = 'QSA,NC,L') {
         $normalized = [
+            'name' => $name, // Nombre descriptivo de la ruta
             'regex' => trim($regex),
             'redirect' => trim($redirect),
             'pretty' => $pretty,
@@ -38,6 +40,18 @@ class WBERoute {
         }
 
         self::$routes[] = $normalized;
+        self::$routesNamed[$name] = $normalized;
+    }
+
+     /**
+     * Obtiene una ruta por su nombre.
+     *
+     * @param string $name
+     * @return array|null
+     */
+    public static function getRoute(string $name): ?array
+    {
+        return self::$routesNamed[$name] ?? null;
     }
     /**
      * Obtiene todas las rutas registradas

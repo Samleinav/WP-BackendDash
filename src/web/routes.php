@@ -4,8 +4,25 @@ use WPBackendDash\Helpers\WBERoute;
 
 WBERoute::route(
     '^([0-9a-zA-Z_-]+/)?center/rooms/?$',
-    
     '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms',
+    'center/rooms'
+);
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/rooms/([0-9a-zA-Z-]+)/?$',
+    '/wp-admin/admin.php?page=wbe_admin_page_chats_room_view&custom_room_id=$2',
+    'center/rooms/{custom_room_id}/view'
+);
+
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/rooms/([0-9a-zA-Z-]+)/edit/?$',
+    '/wp-admin/admin.php?page=wbe_admin_page_chats_room_edit&custom_room_id=$2',
+    'center/rooms/{custom_room_id}/edit'
+);
+
+WBERoute::route(
+    '^([0-9a-zA-Z_-]+/)?center/rooms/create/?$',
+    '/wp-admin/admin.php?page=wbe_admin_page_chats_room_create',
+    'center/rooms/create'
 );
 
 WBERoute::route(

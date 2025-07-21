@@ -16,6 +16,26 @@ WBEPage::add(
 );
 
 WBEPage::add(
+    'wbe_admin_page_chats_room_create',
+    __('Chats Rooms', 'wp-backend-dash'),
+    [WBEChatsRooms::init(), 'create'],
+    'dashicons-admin-generic',
+    'wbe_view_chats_room_create',
+    1,
+    false
+);
+
+WBEPage::add(
+    'wbe_admin_page_chats_room_view',
+    __('Chat Room View', 'wp-backend-dash'),
+    [WBEChatsRooms::init(), 'room_view'],
+    'dashicons-admin-generic',
+    'wbe_view_chats_room_view',
+    3,
+    false
+);
+
+WBEPage::add(
     'wbe_admin_page_orders',
     __('Payments', 'wp-backend-dash'),
     [WBEOrdersController::init(), 'index'],

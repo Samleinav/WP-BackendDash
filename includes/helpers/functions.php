@@ -1,5 +1,46 @@
 <?php
 
+use WPBackendDash\Helpers\WBERoute;
+
+/**
+ * Genera una URL para una ruta nombrada.
+ *
+ * @param string $name   El nombre de la ruta registrada en WBERoute.
+ * @param array  $params Un array asociativo de parámetros para la URL (ej: ['id' => 123]).
+ * @return string La URL completa y generada.
+ */
+function wberoute(string $name, array $params = []): string
+{
+    // 1. Obtener la información de la ruta por su nombre
+    $route = WBERoute::getRoute($name);
+
+    // Si la ruta no existe, devuelve un enlace roto para evitar errores fatales.
+    if (!$route) {
+        // Opcional: puedes registrar un aviso para el desarrollador.
+        trigger_error("La ruta nombrada '{$name}' no existe.", E_USER_WARNING);
+        return '#';
+    }
+
+    // 2. Tomar la URL "pretty" como plantilla
+    $url = $route['pretty'];
+
+    // 3. Reemplazar los placeholders con los parámetros proporcionados
+    foreach ($params as $key => $value) {
+        $url = str_replace('{' . $key . '}', $value, $url);
+    }
+
+    // 4. (Opcional) Limpiar placeholders que no fueron reemplazados
+    // Esto evita que la URL final contenga algo como "/orders/{id}/edit" si no se pasó el id.
+    $url = preg_replace('/\/{\w+}/', '', $url);
+
+    // 5. Construir la URL base (muy importante en entornos como WordPress)
+    // Reemplaza esto con la función adecuada de tu framework o CMS.
+    // Para WordPress, usarías home_url().
+    $baseUrl = rtrim(home_url(), '/'); 
+    
+    return $baseUrl . '/' . ltrim($url, '/');
+}
+
 function aplicar_paquete_ai($user_id, $paquete_slug) {
     $paquetes = [
         'basic' => [
