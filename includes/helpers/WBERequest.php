@@ -1,5 +1,8 @@
 <?php
 namespace WPBackendDash\Helpers;
+
+use WPBackendDash\Helpers\ActionTodoBuilder;
+
 /**
  * usage
  * 1. get
@@ -17,6 +20,7 @@ class WBERequest
 {
     protected static $detectedType = null;
     protected static $parsedJson = null;
+
 
     /**
      * Detecta el tipo de request: json, post, get, ajax
@@ -121,17 +125,50 @@ class WBERequest
     public static function Response()
     {
         return new class {
+
+            private ActionTodoBuilder $actionTodoBuilder;
+
+            private function __construct()
+            {
+                $this->actionTodoBuilder = new ActionTodoBuilder();
+            }
+
+            public function addAction(string $methodRef, array|string|int|float|null $params = [])
+            {
+                $this->actionTodoBuilder->add($methodRef, $params);
+                return $this;
+            }
+
+            public function actions(array $actions)
+            {
+                foreach ($actions as $action) {
+                    if (is_array($action) && isset($action[0])) {
+                        $this->addAction($action[0], $action[1] ?? []);
+                    } elseif (is_string($action)) {
+                        $this->addAction($action);
+                    }
+                }
+                return $this;
+            }
+
+            protected function prepareResponse($data = [])
+            {
+                $response = $this->actionTodoBuilder->response($data);
+
+                return $response;
+            }
+
             public function json($data = [], $code = 200)
             {
-                wp_send_json($data, $code);
+                wp_send_json($this->prepareResponse($data), $code);
             }
 
             public function wpjson($data = [], $success = true)
             {
                 if ($success) {
-                    wp_send_json_success($data);
+                    wp_send_json_success($this->prepareResponse($data));
                 } else {
-                    wp_send_json_error($data);
+                    wp_send_json_error($this->prepareResponse($data));
                 }
             }
 
@@ -150,4 +187,8 @@ class WBERequest
             }
         };
     }
+
+    
+
+
 }

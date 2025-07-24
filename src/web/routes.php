@@ -38,8 +38,8 @@ WBERoute::route(
 
     WBERoute::route(
         'center.orders.view',
-        'center/orders/{custom_order_serial}',
-        '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms&custom_order_serial=$2',
+        'center/orders/{order_serial}',
+        '/wp-admin/admin.php?page=wbe_admin_page_view_order&order_serial=$2',
     );
 
 

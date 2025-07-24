@@ -1,7 +1,17 @@
 <?php
 
 use WPBackendDash\Helpers\WBERoute;
+use WPBackendDash\Helpers\WBERequest;
 
+/**
+ * 
+ * WbeResponse
+ * Maneja las respuestas de la API.
+ */
+function wbeResponse()
+{
+    return WBERequest::Response();
+}
 /**
  * Genera una URL para una ruta nombrada.
  *
