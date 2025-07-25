@@ -8,7 +8,7 @@ class WBEAPIManager {
 
     public function __construct($namespace = null) {
         if ($namespace) $this->namespace = $namespace;
-        add_action('rest_api_init', [$this, 'register_routes']);
+        add_action('rest_api_init', [$this, 'conditionally_register_route']);
     }
 
     /**
@@ -59,12 +59,87 @@ class WBEAPIManager {
      */
     public function register_routes() {
         foreach ($this->routes as $route) {
+
+            $permission = $route['permission_callback'];
+            $permission_callback = null;
+
+            if ($permission === true) {
+                $permission_callback = '__return_true';
+            } elseif (is_string($permission)) {
+                if (str_starts_with($permission, 'role:')) {
+                    $role = substr($permission, 5);
+                    $permission_callback = function () use ($role) {
+                        return in_array($role, (array) wp_get_current_user()->roles);
+                    };
+                } else {
+                    // Se asume como 'capability'
+                    $permission_callback = function () use ($permission) {
+                        return current_user_can($permission);
+                    };
+                }
+            } elseif (is_callable($permission)) {
+                $permission_callback = $permission;
+            } else {
+                $permission_callback = '__return_true';
+            }
+
             register_rest_route($this->namespace, $route['route'], [
                 'methods'             => $route['methods'],
                 'callback'            => $route['callback'],
                 'args'                => $route['args'],
-                'permission_callback' => $route['permission_callback'] ?: '__return_true'
+                'permission_callback' => $permission_callback
             ]);
+        }
+    }
+
+    public static function add_lazy_route($pretty, $methods, $callback, $args = [], $permission = null) {
+        self::$routes[] = compact('pretty', 'methods', 'callback', 'args', 'permission');
+    }
+
+    public function conditionally_register_route() {
+        $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+        $path = trim(parse_url($request_uri, PHP_URL_PATH), '/');
+        $path = preg_replace('#^wp-json/#', '', $path); // remove "wp-json/"
+
+        foreach (self::$routes as $route) {
+            $pattern = preg_quote($route['pretty'], '#');
+            $pattern = preg_replace('#\\\\\{[^/]+\\\\\}#', '[^/]+', $pattern); // {var} -> [^/]+
+            $pattern = "#^{$this->namespace}/{$pattern}$#";
+
+            if (preg_match($pattern, $path)) {
+
+                $permission_callback = '__return_true';
+                $permission = $route['permission_callback'];
+
+                if ($permission === true) {
+                    $permission_callback = '__return_true';
+                } elseif (is_string($permission)) {
+                    if (str_starts_with($permission, 'role:')) {
+                        $role = substr($permission, 5);
+                        $permission_callback = function () use ($role) {
+                            return in_array($role, (array) wp_get_current_user()->roles);
+                        };
+                    } else {
+                        // Se asume como 'capability'
+                        $permission_callback = function () use ($permission) {
+                            return current_user_can($permission);
+                        };
+                    }
+                } elseif (is_callable($permission)) {
+                    $permission_callback = $permission;
+                } else {
+                    $permission_callback = '__return_true';
+                }
+
+                register_rest_route($this->namespace, $route['pretty'], [
+                    'methods'             => $route['methods'],
+                    'callback'            => $route['callback'],
+                    'args'                => $route['args'],
+                    'permission_callback' => $permission_callback,
+                ]);
+
+                break; // Solo registrar la primera que coincida
+            }
         }
     }
 

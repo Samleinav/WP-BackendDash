@@ -146,6 +146,33 @@ class WBERoute {
         return null;
     }
 
+    public static function extractParamsFromPretty(string $pretty) {
+        $regex = preg_quote($pretty, '#');
+        $regex = preg_replace('#\\\\\{(\w+)\\\\\}#', '([^/]+)', $regex); // convierte {param} a ([^/]+)
+        $pattern = '#^' . $regex . '$#';
+
+        $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+        // Busca coincidencias
+        if (preg_match($pattern, $uri, $matches)) {
+            array_shift($matches); // elimina el match completo
+
+            // Extrae nombres de parámetros
+            preg_match_all('/\{(\w+)\}/', $pretty, $nameMatches);
+            $varNames = $nameMatches[1];
+
+            // Asocia nombre => valor
+            $named = [];
+            foreach ($varNames as $i => $name) {
+                $named[$name] = $matches[$i] ?? null;
+            }
+
+            return $named;
+        }
+
+        return null;
+    }
+
     /**
      * Normaliza los flags para comparación (orden alfabético)
      */
