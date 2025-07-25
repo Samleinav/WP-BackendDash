@@ -7,6 +7,8 @@ class WPBackendDashHooks {
         require_once plugin_dir_path(__FILE__) . 'woocommerce/loader_woo.php';
         require_once plugin_dir_path(__FILE__) . 'wbe_remove_backend_notices.php';
         require_once plugin_dir_path(__FILE__) . 'wbe_capabilities_client.php';
+        require_once plugin_dir_path(__FILE__) . 'wbe_remove_duplicates_resources.php';
+
 
     }
 

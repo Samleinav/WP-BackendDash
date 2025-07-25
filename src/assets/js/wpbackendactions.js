@@ -6,7 +6,7 @@
  * @param {string|jQuery} [target] - Selector jQuery o elemento sobre el que mostrar el mensaje. Por defecto es body.
  */
 function showNotify(msg, action = "info", position = "top", target = "body") {
-    const $el = (typeof target === 'string') ? $(target) : target;
+    const $el = (typeof target === 'string') ? jQuery(target) : target;
     if (!$el || $el.length === 0) return console.warn("Elemento objetivo no encontrado");
 
     $el.notify(msg, {

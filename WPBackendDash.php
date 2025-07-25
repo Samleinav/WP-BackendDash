@@ -9,7 +9,7 @@ GitHub Plugin URI: https://github.com/Samleinav/WP-BackendDash
 
 defined('ABSPATH') || exit;
 
-
+define('WBE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WBE_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 spl_autoload_register(function ($class) {

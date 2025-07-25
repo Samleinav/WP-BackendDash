@@ -44,14 +44,35 @@ class WPBackendDashLoader {
         );
         WBEAssets::add_js(
             'wpbackenddash-js',
-            WBE_PLUGIN_PATH. 'src/assets/js/wpbackenddash.js',
+            WBE_PLUGIN_URL. 'src/assets/js/wpbackenddash.js',
             ['jquery'],
             '1.0.0',
         );
         WBEAssets::add_js(
             'wpbackenddash-js',
-            WBE_PLUGIN_PATH. 'src/assets/js/wpbackendactions.js',
+            WBE_PLUGIN_URL. 'src/assets/js/wpbackendactions.js',
             ['jquery'],
+            '1.0.0',
+        );
+
+        WBEAssets::add_css(
+            'nice-forms-css',
+            WBE_PLUGIN_URL . 'src/assets/css/nice-forms/nice-forms.css',
+            [],
+            '1.0.0',
+        );
+
+        WBEAssets::add_js(
+            'jquerymodal-js',
+            "https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js",
+            ['jquery'],
+            '1.0.0',
+        );
+
+        WBEAssets::add_css(
+            'jquerymodal-css',
+            "https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css",
+            [],
             '1.0.0',
         );
         // Cargar assets

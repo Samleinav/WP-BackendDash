@@ -9,8 +9,25 @@ class ControllerHelper {
      * @param string $view Nombre de la vista a renderizar.
      * @param array $data Datos a pasar a la vista.
      */
-    public static function view($view, $data = []) {
-        echo ViewerHelper::view($view, $data);
+    public static function view($view, $data = [], $echo = true) {
+        if($echo) {
+            // Si se requiere imprimir la vista directamente
+            echo self::renderView($view, $data);
+        } else {
+            // Si se requiere devolver la vista como string
+            return self::renderView($view, $data);
+        }
+    }
+
+    /**
+     * Renderiza una vista y devuelve el contenido como string.
+     *
+     * @param string $view Nombre de la vista a renderizar.
+     * @param array $data Datos a pasar a la vista.
+     * @return string Contenido renderizado de la vista.
+     */
+    public static function renderView($view, $data = []) {
+        return ViewerHelper::view($view, $data);
     }
 
     /**

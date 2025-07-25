@@ -46,6 +46,25 @@ class WBERequest
     }
 
     /**
+     * Get All request data
+     */
+    public static function all()
+    {
+        $type = self::detectType();
+
+        switch ($type) {
+            case 'json':
+                return self::json();
+            case 'post':
+                return $_POST;
+            case 'get':
+            case 'ajax':
+            default:
+                return $_REQUEST;
+        }
+    }
+
+    /**
      * Obtener dato del request según el tipo detectado
      */
     public static function get($key = null, $default = null)
