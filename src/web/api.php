@@ -7,4 +7,4 @@ use WPBackendDash\Controllers\WBEApiController;
 
 $apiManager = new WBEAPIManager("wbe/v1");
 
-$apiManager->add_route('/chat/get_chat_create', 'GET', [WBEApiController::class, 'getChatCreateModal'], [], WBEAPIManager::require_login());
+$apiManager->get('/chat/get_chat_create', [WBEApiController::class, 'getChatCreateModal'], [], WBEAPIManager::require_login());

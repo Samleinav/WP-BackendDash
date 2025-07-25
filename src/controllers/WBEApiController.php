@@ -7,10 +7,12 @@ use WPBackendDash\Helpers\WBERequest;
 
 class WBEApiController extends ControllerHelper {
     
-
-    public function getChatCreateModal()
+    /**
+     * Método para obtener el modal de creación de chat
+     */
+    public function getChatCreateModal( $request )
     {
         // Lógica para crear un modal de chat
-        return self::view('api/chat_create_modal');
+        return self::view('chats_rooms/create');
     }
 }

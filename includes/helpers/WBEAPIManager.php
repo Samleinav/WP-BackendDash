@@ -25,6 +25,28 @@ class WBEAPIManager {
     }
 
     /**
+     * GET route
+     */
+    public function get($route, $callback, $args = [], $permission_callback = null) {
+        $this->add_route($route, 'GET', $callback, $args, $permission_callback);
+    }
+
+    /**
+     * POST route
+     */
+    public function post($route, $callback, $args = [], $permission_callback = null) {
+        $this->add_route($route, 'POST', $callback, $args, $permission_callback);
+
+    }
+
+    /**
+     * PUT route
+     */
+    public function put($route, $callback, $args = [], $permission_callback = null) {
+        $this->add_route($route, 'PUT', $callback, $args, $permission_callback);
+    }
+
+    /**
      * Permite registrar un método de clase como controlador
      */
     public function add_class_method_route($route, $methods, $class_instance, $method, $args = [], $permission_callback = null) {
