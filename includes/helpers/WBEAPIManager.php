@@ -3,8 +3,8 @@
 namespace WPBackendDash\Helpers;
 
 class WBEAPIManager {
-    protected $namespace = 'wbe/v1';
-    protected $routes = [];
+    protected static $namespace = 'wbe/v1';
+    protected static $routes = [];
 
     public function __construct($namespace = null) {
         if ($namespace) $this->namespace = $namespace;
@@ -14,8 +14,8 @@ class WBEAPIManager {
     /**
      * Registra una nueva ruta en el API REST
      */
-    public function add_route($route, $methods, $callback, $args = [], $permission_callback = null) {
-        $this->routes[] = [
+    public static function add_route($route, $methods, $callback, $args = [], $permission_callback = null) {
+        self::$routes[] = [
             'route' => $route,
             'methods' => $methods,
             'callback' => $callback,
@@ -27,23 +27,23 @@ class WBEAPIManager {
     /**
      * GET route
      */
-    public function get($route, $callback, $args = [], $permission_callback = null) {
-        $this->add_route($route, 'GET', $callback, $args, $permission_callback);
+    public static function get($route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($route, 'GET', $callback, $args, $permission_callback);
     }
 
     /**
      * POST route
      */
-    public function post($route, $callback, $args = [], $permission_callback = null) {
-        $this->add_route($route, 'POST', $callback, $args, $permission_callback);
+    public static function post($route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($route, 'POST', $callback, $args, $permission_callback);
 
     }
 
     /**
      * PUT route
      */
-    public function put($route, $callback, $args = [], $permission_callback = null) {
-        $this->add_route($route, 'PUT', $callback, $args, $permission_callback);
+    public static function put($route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($route, 'PUT', $callback, $args, $permission_callback);
     }
 
     /**
@@ -51,7 +51,7 @@ class WBEAPIManager {
      */
     public function add_class_method_route($route, $methods, $class_instance, $method, $args = [], $permission_callback = null) {
         $callback = [$class_instance, $method];
-        $this->add_route($route, $methods, $callback, $args, $permission_callback);
+        self::add_route($route, $methods, $callback, $args, $permission_callback);
     }
 
     /**
