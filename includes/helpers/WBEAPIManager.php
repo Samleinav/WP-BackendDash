@@ -5,16 +5,19 @@ namespace WPBackendDash\Helpers;
 class WBEAPIManager {
     protected static $namespace = 'wbe/v1';
     protected static $routes = [];
+    protected static $init = false;
 
     public function __construct($namespace = null) {
         if ($namespace) $this->namespace = $namespace;
         add_action('rest_api_init', [$this, 'conditionally_register_route']);
     }
 
+
     /**
      * Registra una nueva ruta en el API REST
      */
     public static function add_route($route, $methods, $callback, $args = [], $permission_callback = null) {
+       
         self::$routes[] = [
             'route' => $route,
             'methods' => $methods,
@@ -55,7 +58,7 @@ class WBEAPIManager {
     }
 
     /**
-     * Registro final en WordPress
+     * Registro final en WordPress -- no usando por ahora
      */
     public function register_routes() {
         foreach ($this->routes as $route) {
@@ -92,9 +95,6 @@ class WBEAPIManager {
         }
     }
 
-    public static function add_lazy_route($pretty, $methods, $callback, $args = [], $permission = null) {
-        self::$routes[] = compact('pretty', 'methods', 'callback', 'args', 'permission');
-    }
 
     public function conditionally_register_route() {
         $request_uri = $_SERVER['REQUEST_URI'] ?? '';
@@ -102,9 +102,12 @@ class WBEAPIManager {
         $path = preg_replace('#^wp-json/#', '', $path); // remove "wp-json/"
 
         foreach (self::$routes as $route) {
-            $pattern = preg_quote($route['pretty'], '#');
+            $pattern = preg_quote($route['route'], '#');
             $pattern = preg_replace('#\\\\\{[^/]+\\\\\}#', '[^/]+', $pattern); // {var} -> [^/]+
-            $pattern = "#^{$this->namespace}/{$pattern}$#";
+            $namespace = trim(self::$namespace, '/');
+            $pattern = "#^{$namespace}{$pattern}$#";
+
+            $path = trim($path, '/');
 
             if (preg_match($pattern, $path)) {
 
@@ -131,7 +134,7 @@ class WBEAPIManager {
                     $permission_callback = '__return_true';
                 }
 
-                register_rest_route($this->namespace, $route['pretty'], [
+                register_rest_route(self::$namespace, $route['route'], [
                     'methods'             => $route['methods'],
                     'callback'            => $route['callback'],
                     'args'                => $route['args'],
