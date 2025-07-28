@@ -4,6 +4,7 @@ namespace WPBackendDash\Includes;
 
 use WPBackendDash\Includes\WBESourceLoader;
 use WPBackendDash\Helpers\WBERoute;
+use WPBackendDash\Helpers\WBEAPIManager;    
 use WPBackendDash\Helpers\WBEPage;
 use WPBackendDash\Helpers\WBEAssets;
 use WPBackendDash\Hooks\WPBackendDashHooks;
@@ -26,6 +27,8 @@ class WPBackendDashLoader {
         WBERoute::applyChangesIfNeeded();
         // load pages
         WBEPage::init();
+
+        WBEAPIManager::init();
 
     }
 

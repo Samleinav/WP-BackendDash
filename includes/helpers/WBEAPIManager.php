@@ -7,8 +7,16 @@ class WBEAPIManager {
     protected static $routes = [];
     protected static $init = false;
 
-    public function __construct() {
-        add_action('rest_api_init', [$this, 'conditionally_register_route']);
+    public static function init() {
+        
+        add_action('rest_api_init', function () {
+
+            if (self::$init) {
+                return;
+            }
+            WBEAPIManager::conditionally_register_route();
+
+        });
     }
 
 
@@ -17,10 +25,7 @@ class WBEAPIManager {
      */
     public static function add_route($name, $route, $methods, $callback, $args = [], $permission_callback = null) {
 
-       if(!self::$init) {
-            new  WBEAPIManager();
-            self::$init = true;// Evita registrar rutas múltiples veces
-        }
+      
 
         self::$routes[] = [
             'names' => $name,
@@ -110,8 +115,10 @@ class WBEAPIManager {
         }
     }
 
-
-    public function conditionally_register_route() {
+    /**
+     * Registra las rutas condicionalmente
+     */
+    public static function conditionally_register_route() {
         $request_uri = $_SERVER['REQUEST_URI'] ?? '';
         $path = trim(parse_url($request_uri, PHP_URL_PATH), '/');
         $path = preg_replace('#^wp-json/#', '', $path); // remove "wp-json/"
