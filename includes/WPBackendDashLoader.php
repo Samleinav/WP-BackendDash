@@ -52,7 +52,7 @@ class WPBackendDashLoader {
             '1.0.0',
         );
         WBEAssets::add_js(
-            'wpbackenddash-js',
+            'wpbackenddashactions-js',
             WBE_PLUGIN_URL. 'src/assets/js/wpbackendactions.js',
             ['jquery'],
             '1.0.0',

@@ -93,8 +93,6 @@ class WPRequest {
             dispatchActions = true
         } = options;
 
-        if (!action) throw new Error('Falta el parámetro `action`');
-
         let payload;
 
         if (data instanceof HTMLFormElement) {
