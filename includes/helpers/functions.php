@@ -2,6 +2,7 @@
 
 use WPBackendDash\Helpers\WBERoute;
 use WPBackendDash\Helpers\WBERequest;
+use WPBackendDash\Helpers\WBEAPIManager;
 
 /**
  * 
@@ -33,6 +34,40 @@ function wberoute(string $name, array $params = []): string
 
     // 2. Tomar la URL "pretty" como plantilla
     $url = $route['pretty'];
+
+    // 3. Reemplazar los placeholders con los parámetros proporcionados
+    foreach ($params as $key => $value) {
+        $url = str_replace('{' . $key . '}', $value, $url);
+    }
+
+    // 4. (Opcional) Limpiar placeholders que no fueron reemplazados
+    // Esto evita que la URL final contenga algo como "/orders/{id}/edit" si no se pasó el id.
+    $url = preg_replace('/\/{\w+}/', '', $url);
+
+    // 5. Construir la URL base (muy importante en entornos como WordPress)
+    // Reemplaza esto con la función adecuada de tu framework o CMS.
+    // Para WordPress, usarías home_url().
+    $baseUrl = rtrim(home_url(), '/'); 
+    
+    return $baseUrl . '/' . ltrim($url, '/');
+}
+
+/**
+ * get route api by name
+ */
+function wberouteapi(string $name, array $params = []): string
+{
+
+    $route = WBEAPIManager::getRoute($name);
+     // Si la ruta no existe, devuelve un enlace roto para evitar errores fatales.
+    if (!$route) {
+        // Opcional: puedes registrar un aviso para el desarrollador.
+        trigger_error("La ruta nombrada '{$name}' no existe.", E_USER_WARNING);
+        return '#';
+    }
+
+    // 2. Tomar la URL "pretty" como plantilla
+    $url = $route['full_route'];
 
     // 3. Reemplazar los placeholders con los parámetros proporcionados
     foreach ($params as $key => $value) {

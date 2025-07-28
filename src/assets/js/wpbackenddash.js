@@ -68,7 +68,7 @@ window.actionDispatcher = actionDispatcher; // Exponer el dispatcher globalmente
 class WPRequest {
     constructor(baseURL = null) {
         this.baseURL = baseURL || window.ajaxurl || '/wp-admin/admin-ajax.php';
-    }
+    }   
 
     /**
      * Envía un request a WordPress
@@ -84,6 +84,7 @@ class WPRequest {
     send(options = {}) {
         const {
             action,
+            url = this.baseURL,
             data = {},
             onSuccess,
             onError,
@@ -112,7 +113,7 @@ class WPRequest {
         payload.append('action', action);
 
         return $.ajax({
-            url: this.baseURL,
+            url: url,
             method: method,
             data: payload,
             processData: false,
@@ -137,6 +138,39 @@ class WPRequest {
         });
     }
 }
+/**
+ * 
+ * const formElement = document.querySelector('#my-form');
 
 const wpAjax = new WPRequest();
+
+wpAjax.send({
+    action: 'my_custom_ajax_action',
+    data: formElement,
+    onSuccess(data) {
+        console.log('Éxito', data);
+    },
+    onError(error) {
+        console.warn('Error', error);
+    },
+    onAlways() {
+        console.log('Petición finalizada');
+    }
+});
+ */
+const wpAjax = new WPRequest();
 window.wpAjax = wpAjax;
+
+/** look all form with wbe-form class  */
+jQuery('form.wbe-form').each((index, form) => {
+    const $form = jQuery(form);
+    $form.on('submit', (e) => {
+        e.preventDefault();
+
+        wpAjax.send({
+            method: $form.attr('method') || 'POST',
+            data: $form.serialize(),
+            url: $form.attr('action') || window.ajaxurl,
+        });
+        });
+});

@@ -8,7 +8,7 @@ use WPBackendDash\Helpers\WBERoute;
 
 // Routes for the Chats Rooms section
 WBERoute::route(
-    'center.rooms',
+    'center.rooms.index',
     'center/rooms',
     '/wp-admin/admin.php?page=wbe_admin_page_chats_rooms'
 );

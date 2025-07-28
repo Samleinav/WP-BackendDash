@@ -3,6 +3,7 @@ namespace WPBackendDash\Controllers;
 use WPBackendDash\Helpers\WBERequest;
 use WPBackendDash\Helpers\ControllerHelper;
 use WPBackendDash\Helpers\WBEForm;
+use WPBackendDash\Models\RoomChatModel;
 
 class WBEChatsRooms extends ControllerHelper {
  
@@ -22,6 +23,25 @@ class WBEChatsRooms extends ControllerHelper {
         WBEForm::bootstrap();
         // Lógica para crear una nueva sala de chat
         return self::view('chats_rooms/create');
+    }
+
+    public function store(WBERequest $request) {
+        // Lógica para almacenar una nueva sala de chat
+        $data = $request->all();
+        
+        // Validación y almacenamiento de datos
+        $roomChat = new RoomChatModel();
+        $roomChat->fill($data);
+        if ($roomChat->save()) {
+            return $request->Response()
+            ->addAction("wbeShowNotify", ["Sala de chat creada exitosamente.", "success"])
+            ->addAction("wbeRedirect", ["url" => wberoute('center.rooms.index')])
+            ->send();
+        } else {
+            return $request->Response()
+                ->addAction("wbeShowNotify", ["Error al crear la sala de chat.", "error"]) 
+                ->send();
+        }
     }
 
     public function edit($room_id) {

@@ -182,6 +182,14 @@ class WBERequest
                 wp_send_json($this->prepareResponse($data), $code);
             }
 
+            public function send($data = [], $code = 200)
+            {
+                http_response_code($code);
+                header('Content-Type: application/json');
+                echo json_encode($this->prepareResponse($data));
+                exit;
+            }
+
             public function wpjson($data = [], $success = true)
             {
                 if ($success) {

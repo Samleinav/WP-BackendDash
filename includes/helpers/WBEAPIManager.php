@@ -7,8 +7,7 @@ class WBEAPIManager {
     protected static $routes = [];
     protected static $init = false;
 
-    public function __construct($namespace = null) {
-        if ($namespace) $this->namespace = $namespace;
+    public function __construct() {
         add_action('rest_api_init', [$this, 'conditionally_register_route']);
     }
 
@@ -16,15 +15,31 @@ class WBEAPIManager {
     /**
      * Registra una nueva ruta en el API REST
      */
-    public static function add_route($route, $methods, $callback, $args = [], $permission_callback = null) {
-       
+    public static function add_route($name, $route, $methods, $callback, $args = [], $permission_callback = null) {
+
+       if(!self::$init) {
+            new  WBEAPIManager();
+            self::$init = true;// Evita registrar rutas múltiples veces
+        }
+
         self::$routes[] = [
+            'names' => $name,
+            "full_route" => "wp-json/" .self::$namespace ."/$route",
             'route' => $route,
             'methods' => $methods,
             'callback' => $callback,
             'args' => $args,
             'permission_callback' => $permission_callback
         ];
+    }
+
+    public static function getRoute($name){
+        foreach (self::$routes as $route) {
+            if ($route['names'] === $name) {
+                return $route;
+            }
+        }
+        return null; // Si no se encuentra la ruta
     }
 
     /**
@@ -132,6 +147,17 @@ class WBEAPIManager {
                     $permission_callback = $permission;
                 } else {
                     $permission_callback = '__return_true';
+                }
+
+                if(is_string($route['callback']) && strpos($route['callback'], '@') !== false) {
+                    // Si es un string con formato "Clase@metodo"
+                    $parts = explode('@', $route['callback']);
+                    $class = $parts[0];
+                    $method = $parts[1];
+                    $route['callback'] = [new $class(), $method];
+                }elseif (is_array($route['callback']) && count($route['callback']) === 2 && is_string($route['callback'][0]) && is_string($route['callback'][1])) {
+                    // Si es un array con formato [objeto, metodo]
+                    $route['callback'] = [ new $route['callback'][0](), $route['callback'][1]];
                 }
 
                 register_rest_route(self::$namespace, $route['route'], [

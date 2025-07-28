@@ -1,7 +1,7 @@
 <div class="wrap">
     <h1 class="mb-4"><?php _e('Create AI Interview', 'wbe-plugin'); ?></h1>
 
-    <form id="create_ai_interview_form" method="post" class="nice-form-group">
+    <form id="create_ai_interview_form" action="<?= wberouteapi('chat.create') ?>" method="post" class="nice-form-group wbe-form" enctype="multipart/form-data">
 
         <div class="nice-form-group">
             <label for="meeting_link"><?php _e('Meeting Link', 'wbe-plugin'); ?></label>
