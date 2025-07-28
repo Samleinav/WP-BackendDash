@@ -28,7 +28,7 @@ class WBEAPIManager {
       
 
         self::$routes[] = [
-            'names' => $name,
+            'name' => $name,
             "full_route" => "wp-json/" .self::$namespace ."/$route",
             'route' => $route,
             'methods' => $methods,
@@ -40,7 +40,7 @@ class WBEAPIManager {
 
     public static function getRoute($name){
         foreach (self::$routes as $route) {
-            if ($route['names'] === $name) {
+            if ($route['name'] === $name) {
                 return $route;
             }
         }
@@ -50,23 +50,23 @@ class WBEAPIManager {
     /**
      * GET route
      */
-    public static function get($route, $callback, $args = [], $permission_callback = null) {
-        self::add_route($route, 'GET', $callback, $args, $permission_callback);
+    public static function get($name, $route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($name, $route, 'GET', $callback, $args, $permission_callback);
     }
 
     /**
      * POST route
      */
-    public static function post($route, $callback, $args = [], $permission_callback = null) {
-        self::add_route($route, 'POST', $callback, $args, $permission_callback);
+    public static function post($name,$route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($name, $route, 'POST', $callback, $args, $permission_callback);
 
     }
 
     /**
      * PUT route
      */
-    public static function put($route, $callback, $args = [], $permission_callback = null) {
-        self::add_route($route, 'PUT', $callback, $args, $permission_callback);
+    public static function put($name,$route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($name, $route, 'PUT', $callback, $args, $permission_callback);
     }
 
     /**
