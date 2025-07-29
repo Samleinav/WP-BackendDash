@@ -8,7 +8,7 @@ use WPBackendDash\Controllers\WBEChatsRooms;
 WBEPage::add(
     'wbe_admin_page_chats_rooms',
     __('Chats Rooms', 'wp-backend-dash'),
-    [WBEChatsRooms::init(), 'index'],
+    [WBEChatsRooms::class, 'index'],
     'dashicons-admin-generic',
     'wbe_view_chats_rooms',
     0,
@@ -18,7 +18,7 @@ WBEPage::add(
     WBEPage::add(
         'wbe_admin_page_chats_room_create',
         __('Chats Rooms', 'wp-backend-dash'),
-        [WBEChatsRooms::init(), 'create'],
+        [WBEChatsRooms::class, 'create'],
         'dashicons-admin-generic',
         'wbe_view_chats_room_create',
         1,
@@ -28,7 +28,7 @@ WBEPage::add(
     WBEPage::add(
         'wbe_admin_page_chats_room_edit',
         __('Chats Rooms', 'wp-backend-dash'),
-        [WBEChatsRooms::init(), 'edit'],
+        [WBEChatsRooms::class, 'edit'],
         'dashicons-admin-generic',
         'wbe_view_chats_room_edit',
         1,
@@ -38,7 +38,7 @@ WBEPage::add(
     WBEPage::add(
         'wbe_admin_page_chats_room_view',
         __('Chat Room View', 'wp-backend-dash'),
-        [WBEChatsRooms::init(), 'room_view'],
+        [WBEChatsRooms::class, 'room_view'],
         'dashicons-admin-generic',
         'wbe_view_chats_room_view',
         1,
@@ -48,7 +48,7 @@ WBEPage::add(
 WBEPage::add(
     'wbe_admin_page_orders',
     __('Payments', 'wp-backend-dash'),
-    [WBEOrdersController::init(), 'index'],
+    [WBEOrdersController::class, 'index'],
     'dashicons-admin-generic',
     'wbe_view_orders',
     2,
