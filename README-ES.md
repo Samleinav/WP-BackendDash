@@ -213,6 +213,75 @@ class WBEChatsRooms extends ControllerHelper {
     }
 }
 ```
+## 🗃️ Modelos (`src/models/`)
+
+Los modelos representan tablas de la base de datos y permiten interactuar con ellas mediante una API orientada a objetos. Están basados en la clase `WBEModelBase` y ofrecen métodos similares a Eloquent de Laravel, como `find`, `where`, `create`, `save` y `delete`.
+
+---
+
+### 🧱 Ejemplo de un modelo
+
+```php
+namespace WPBackendDash\Models;
+
+use WPBackendDash\Helpers\WBEModelBase;
+
+class RoomChatModel extends WBEModelBase {
+    protected $table = 'room_chats';
+
+    protected $fillable = [
+        'user_id', 
+        'meeting_link', 
+        'type', 
+        'details',
+        'attachments',
+        'time',
+        'tokens',
+        'interview_complete',
+        'in_use'
+    ];
+}
+```
+🔐 El atributo $fillable asegura que solo esos campos puedan ser insertados/actualizados masivamente con fill() o create().
+
+### 🛠 Métodos disponibles
+- Método	    Descripción
+- fill($data)	Llena los atributos del modelo desde un array asociativo.
+- find($id)	    Busca un registro por clave primaria.
+- all()	        Retorna todos los registros de la tabla.
+- where($col, $val)	Filtra registros por columna/valor.
+- save()	    Guarda el modelo actual. Si existe, hace update; si no, crea uno nuevo.
+- create($data)	Crea directamente un nuevo registro.
+- update($id, $data)	Actualiza un registro específico.
+- delete($id)	Elimina un registro por ID.
+- exists($id?)	Verifica si el registro existe en la base de datos.
+- toArray()	    Retorna los atributos actuales del modelo como array.
+
+#### ✅ Ejemplo práctico
+
+```php
+
+use WPBackendDash\Helpers\WBERequest;
+use WPBackendDash\Models\RoomChatModel;
+
+$data = WBERequest::all();
+
+$room = new RoomChatModel();
+$room->fill($data);
+
+if ($room->save()) {
+    // Éxito: Redirigir o notificar
+} else {
+    // Error: Mostrar mensaje
+}
+```
+
+También puedes hacer consultas directas:
+
+```php
+RoomChatModel::find(5);
+RoomChatModel::where('type', 'interview');
+```
 
 ## 🛠️ Rutas Personalizadas (`web/routes.php`)
 

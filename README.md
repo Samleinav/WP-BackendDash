@@ -213,6 +213,75 @@ public function index() {
     }
 }
 ```
+## 🗃️ Models (`src/models/`)
+
+Models represent database tables and allow you to interact with them using an object-oriented API. They are based on the `WBEModelBase` class and offer methods similar to Laravel's Eloquent, such as `find`, `where`, `create`, `save`, and `delete`.
+
+---
+
+### 🧱 Model Example
+
+```php
+namespace WPBackendDash\Models;
+
+use WPBackendDash\Helpers\WBEModelBase;
+
+class RoomChatModel extends WBEModelBase {
+protected $table = 'room_chats';
+
+protected $fillable = [
+'user_id',
+'meeting_link',
+'type',
+'details',
+'attachments',
+'time',
+'tokens',
+'interview_complete',
+'in_use'
+];
+}
+```
+🔐 The $fillable attribute ensures that only those fields can be bulk inserted/updated with fill() or create().
+
+### 🛠 Available Methods
+- Method Description
+- fill($data) Fills the model's attributes from an associative array.
+- find($id) Searches for a record by primary key.
+- all() Returns all records in the table.
+- where($col, $val) Filters records by column/value.
+- save() Saves the current model. If it exists, updates it; if not, creates a new one.
+- create($data) Creates a new record directly.
+- update($id, $data) Updates a specific record.
+- delete($id) Deletes a record by ID.
+- exists($id?) Checks if the record exists in the database.
+- toArray() Returns the current model attributes as an array.
+
+#### ✅ Practical Example
+
+```php
+
+use WPBackendDash\Helpers\WBERequest;
+use WPBackendDash\Models\RoomChatModel;
+
+$data = WBERequest::all();
+
+$room = new RoomChatModel();
+$room->fill($data);
+
+if ($room->save()) {
+// Success: Redirect or notify
+} else {
+// Error: Display message
+}
+```
+
+You can also make direct queries:
+
+```php
+RoomChatModel::find(5);
+RoomChatModel::where('type', 'interview');
+```
 
 ## 🛠️ Custom Routes (`web/routes.php`)
 
