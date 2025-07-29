@@ -25,9 +25,9 @@ class WBEChatsRooms extends ControllerHelper {
         return self::view('chats_rooms/create');
     }
 
-    public function store(WBERequest $request) {
+    public function store() {
         // Lógica para almacenar una nueva sala de chat
-        $data = $request->all();
+        $data = WBERequest::all();
         
         // Validación y almacenamiento de datos
         $roomChat = new RoomChatModel();

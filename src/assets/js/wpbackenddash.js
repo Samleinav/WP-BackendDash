@@ -110,7 +110,7 @@ class WPRequest {
 
         payload.append('action', action);
 
-        return $.ajax({
+        return jQuery.ajax({
             url: url,
             method: method,
             data: payload,
@@ -160,14 +160,14 @@ const wpAjax = new WPRequest();
 window.wpAjax = wpAjax;
 
 /** look all form with wbe-form class  */
-jQuery('form.wbe-form').each((index, form) => {
-    const $form = jQuery(form);
+jQuery('form.wbe-form').each((index, _form) => {
+    const $form = jQuery(_form);
     $form.on('submit', (e) => {
         e.preventDefault();
 
         wpAjax.send({
             method: $form.attr('method') || 'POST',
-            data: $form.serialize(),
+            data: _form,
             url: $form.attr('action') || window.ajaxurl,
         });
         });

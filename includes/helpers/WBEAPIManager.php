@@ -29,7 +29,7 @@ class WBEAPIManager {
 
         self::$routes[] = [
             'name' => $name,
-            "full_route" => "wp-json/" .self::$namespace ."/$route",
+            "full_route" => "wp-json/" .self::$namespace ."$route",
             'route' => $route,
             'methods' => $methods,
             'callback' => $callback,
