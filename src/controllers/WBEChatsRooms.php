@@ -64,12 +64,25 @@ class WBEChatsRooms extends ControllerHelper {
 
     public function edit($room_id) {
         // Lógica para editar una sala de chat existente
-        return self::view('chats_rooms/edit', compact('room_id'));
+        $roomChat = RoomChatModel::where("token", $room_id);
+
+        if (!$roomChat){
+            return "No found";
+        }
+        $roomChat = $roomChat[0];
+
+        return self::view('chats_rooms/edit', compact('roomChat'));
     }
 
-    public function update(WBERequest $request, $room_id) {
+    public function update(WBERequest $request, $token) {
         // Lógica para actualizar una sala de chat existente)
-        $roomChat = RoomChatModel::find($room_id);
+        $roomChat = RoomChatModel::where("token", $token);
+
+        if (!$roomChat){
+            return "No found";
+        }
+        $roomChat = $roomChat[0];
+
         $data = $request->all();
 
         $roomChat->fill($data);
@@ -79,6 +92,10 @@ class WBEChatsRooms extends ControllerHelper {
             $file = $this->uploadFile($attachments, ['user_id' => $roomChat->user_id]);
             $roomChat->attachments = $file['file_id'] ?? null;
         }
+
+        $roomChat->in_use = isset($data['in_use']) ? $data['in_use'] : 0;
+        $roomChat->interview_complete = isset($data['interview_complete']) ? $data['interview_complete'] : 0;
+
 
         if ($roomChat->save()) {
             $response = WBERequest::Response();

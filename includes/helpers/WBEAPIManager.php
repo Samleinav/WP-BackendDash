@@ -18,7 +18,7 @@ class WBEAPIManager {
             if (self::$init) {
                 return;
             }
-            WBEAPIManager::conditionally_register_route();
+            WBEAPIManager::conditionally_register_routev2();
 
         });
     }
@@ -32,16 +32,37 @@ class WBEAPIManager {
      */
     public static function add_route($name, $route, $methods, $callback, $args = [], $permission_callback = null) {
 
-      
+        $wp_route = self::convert_pretty_route_to_wp($route, $args);
+
 
         self::$routes[] = [
             'name' => $name,
             "full_route" => "wp-json/" .self::$namespace ."$route",
-            'route' => $route,
+            'route' => $wp_route['route'],
             'methods' => $methods,
             'callback' => $callback,
-            'args' => $args,
+            'args' => $wp_route['args'],
             'permission_callback' => $permission_callback
+        ];
+    }
+
+    private static function convert_pretty_route_to_wp(string $prettyRoute, array $customArgs = []): array {
+        $pattern = preg_replace_callback('/\{(\w+)\}/', function ($matches) use (&$args) {
+            $param = $matches[1];
+            $args[$param] = [
+                'required' => true,
+                'validate_callback' => function ($value) {
+                    return is_string($value) && strlen($value) > 0;
+                }
+            ];
+            return '(?P<' . $param . '>[^/]+)';
+        }, $prettyRoute);
+
+        $args = $args ?? [];
+
+        return [
+            'route' => $pattern,
+            'args' => array_merge($args, $customArgs),
         ];
     }
 
@@ -52,6 +73,39 @@ class WBEAPIManager {
             }
         }
         return null; // Si no se encuentra la ruta
+    }
+
+    public static function route($method, $name, $route, $callback, $args = [], $permission_callback = null) {
+        self::add_route($name, $route, strtoupper($method), $callback, $args, $permission_callback);
+    }
+
+    private static function normalize_permission_callback($permission) {
+        if ($permission === true) {
+            return '__return_true';
+        }
+
+        if (is_string($permission)) {
+            if (str_starts_with($permission, 'role:')) {
+                $role = substr($permission, 5);
+                return fn() => in_array($role, (array) wp_get_current_user()->roles);
+            }
+
+            if (str_starts_with($permission, 'can:')) {
+                return fn() => current_user_can(substr($permission, 4));
+            }
+
+            if (str_starts_with($permission, 'login')) {
+                return fn() => is_user_logged_in();
+            }
+
+            return fn() => current_user_can($permission);
+        }
+
+        if (is_callable($permission)) {
+            return $permission;
+        }
+
+        return '__return_true';
     }
 
     /**
@@ -125,6 +179,54 @@ class WBEAPIManager {
     /**
      * Registra las rutas condicionalmente
      */
+    public static function conditionally_register_routev2() {
+        $match = self::matchCurrentRoute();
+        if (!$match) return;
+
+        $route = $match['route'];
+        register_rest_route(
+            self::$namespace,
+            $route['route'],
+            [
+                'methods'             => $route['methods'],
+                'callback'            => self::resolvev2($route['callback'], $match['params']),
+                'args'                => $route['args'],
+                'permission_callback' => self::normalize_permission_callback($route['permission_callback']),
+            ]
+        );
+    }
+
+    public static function resolvev2($callback, $params = null) {
+        $params ??= self::matchCurrentRoute()['params'] ?? [];
+
+        if (is_array($callback) && is_string($callback[0])) {
+            $callback[0] = new $callback[0];
+        }
+
+        $reflection = is_array($callback)
+            ? new ReflectionMethod($callback[0], $callback[1])
+            : new ReflectionFunction($callback);
+
+        return function () use ($callback, $reflection, $params) {
+            $args = [];
+
+            foreach ($reflection->getParameters() as $param) {
+                $type = $param->getType();
+                $name = $param->getName();
+
+                if ($type && !$type->isBuiltin()) {
+                    $args[] = new ($type->getName());
+                } elseif (array_key_exists($name, $params)) {
+                    $args[] = $params[$name];
+                } else {
+                    $args[] = WBERequest::get($name) ?? null;
+                }
+            }
+
+            return call_user_func_array($callback, $args);
+        };
+    }
+
     public static function conditionally_register_route() {
         $request_uri = $_SERVER['REQUEST_URI'] ?? '';
         $path = trim(parse_url($request_uri, PHP_URL_PATH), '/');
