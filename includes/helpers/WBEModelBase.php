@@ -7,6 +7,7 @@ class WBEModelBase {
     protected $primaryKey = 'id';
     protected $fillable = [];
     protected $attributes = [];
+    protected $required = [];
 
     public function __construct() {
         if ($this->table) {
@@ -35,6 +36,10 @@ class WBEModelBase {
         return $wpdb->get_results("SELECT * FROM {$this->table}");
     }
 
+    public function getRequired() {
+        return $this->required;
+    }
+    
     public function find($id) {
         global $wpdb;
         $row = $wpdb->get_row(

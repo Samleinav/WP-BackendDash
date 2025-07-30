@@ -133,8 +133,8 @@ class WPRequest {
             }
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-            console.error('Error AJAX', textStatus, errorThrown);
             onError?.({ message: errorThrown || 'Request failed' }, jqXHR);
+            wbeShowNotify('Error', errorThrown || 'Request failed', 'error');
         })
         .always(() => {
             onAlways?.();

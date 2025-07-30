@@ -136,10 +136,6 @@ class WBEAPIManager {
 
             if (preg_match($pattern, $path) ) {
 
-                if(!self::checkNonceRest()) {
-                    return new \WP_Error('rest_forbidden', 'No tienes permiso para acceder a esta ruta.', ['status' => 403]);
-                }
-
                 $permission_callback = '__return_true';
                 $permission = $route['permission_callback'];
 
@@ -151,6 +147,18 @@ class WBEAPIManager {
                         $permission_callback = function () use ($role) {
                             return in_array($role, (array) wp_get_current_user()->roles);
                         };
+                    } elseif (str_starts_with($permission, 'can:')) {
+                        // Se asume como 'capability'
+                        $permission_callback = function () use ($permission) {
+                            return current_user_can(substr($permission, 4));
+                        };
+
+                    }elseif (str_starts_with($permission, 'login')) {
+                        // Se asume como 'logged_in'
+                        $permission_callback = function () {
+                            return is_user_logged_in();
+                        };
+
                     } else {
                         // Se asume como 'capability'
                         $permission_callback = function () use ($permission) {

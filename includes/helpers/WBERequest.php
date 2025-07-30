@@ -177,7 +177,51 @@ class WBERequest
         return new WBEResponseBuilder();
     }
 
-    
+    public static function request()
+    {
+        return new self();
+    }
+
+    public static function requiredFields($modelOrArray)
+    {
+        $requiredFields = [];
+        if (is_array($modelOrArray)) {
+            $requiredFields = $modelOrArray;
+        } elseif (method_exists($modelOrArray, 'getRequired')) {
+            $requiredFields = $modelOrArray->getRequired();
+        }
+
+        $all = self::all();
+        $missingFields = [];
+        foreach ($requiredFields as $field) {
+            if (!isset($all[$field]) || empty($all[$field])) {
+                $missingFields[] = $field;
+            }
+        }
+
+        return $missingFields;
+    }
+
+    public static function hasRequiredFields($modelOrArray)
+    {
+        $missingFields = self::requiredFields($modelOrArray);
+        return empty($missingFields);
+    }
+
+    public static function validate($modelOrArray)
+    {
+        $missingFields = self::requiredFields($modelOrArray);
+        if (!empty($missingFields)) {
+            $response = self::Response();
+
+            foreach ($missingFields as $field) {
+                $response->addAction("wbeShowNotify", ["Error!", "Required Field: " . $field, "error"]);
+            }
+            return $response->wpjson();
+        }
+
+        return true;
+    }
 
 
 }

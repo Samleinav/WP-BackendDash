@@ -27,17 +27,29 @@ class WBEChatsRooms extends ControllerHelper {
 
     public function store() {
         // Lógica para almacenar una nueva sala de chat
-        $data = WBERequest::all();
-        
+
+        WBERequest::validate(new RoomChatModel());
+
+        $request = WBERequest::request();
+
+        $data = $request->all();
+
         // Validación y almacenamiento de datos
         $roomChat = new RoomChatModel();
         $roomChat->fill($data);
         $roomChat->user_id = get_current_user_id(); // Asignar el ID del usuario actual
         $roomChat->token = wp_generate_uuid4(); // Generar un token único
+
+        if($request->hasFile('attachments')) {
+            $attachments = $request->file('attachments');
+            $file = $this->uploadFile($attachments, ['user_id' => $roomChat->user_id]);
+        }
+
         if ($roomChat->save()) {
             return $this->response()
             ->addAction("wbeShowNotify", ["Exito!", "Sala de chat creada exitosamente.", "success"])
-            ->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = true ])
+            ->addAction("wbeShowNotify", ["File uploaded!", $file['file_id'], "success"])
+            ->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = false ])
             ->wpjson();
         } else {
             return $this->response()

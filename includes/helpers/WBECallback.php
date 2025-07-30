@@ -66,11 +66,20 @@ class WBECallback
                 $name = $param->getName();
 
                 if ($type && !$type->isBuiltin()) {
-                    $args[] = new ($type->getName())();
+
+                    $className = $type->getName();
+                    $instance = new $className();
+                    
+                    $args[] = $instance;
+
                 } elseif (isset($params[$name])) {
+
                     $args[] = $params[$name];
+
                 } else {
+
                     $args[] = WBERequest::get($name) ?? null;
+
                 }
             }
 

@@ -113,8 +113,17 @@ class ControllerHelper {
     }
     
 
-    public function uploadFile($file, $options = ['test_form' => false, 'mimes' => []] ) {
+    public function uploadFile($file, $options = []) {
+
         $this->file_resource();
+
+        $options = array_merge([
+            'test_form' => false,
+            'mimes' => [],
+            'unique_filename_callback' => null,
+            'user_id' => get_current_user_id(),
+        ], $options);
+
         $upload = wp_handle_upload($file,$options );
         if (isset($upload['error'])) {
             return new \WP_Error('upload_error', $upload['error']);
@@ -127,7 +136,7 @@ class ControllerHelper {
             'post_title'     => sanitize_file_name($file['name']),
             'post_content'   => '',
             'post_status'    => 'inherit',
-            'post_author'    => get_current_user_id(),
+            'post_author'    => $options['user_id'],
         ];
         $attachment_id = wp_insert_attachment($attachment, $upload['file']);
 

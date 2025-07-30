@@ -18,5 +18,12 @@ class RoomChatModel  extends WBEModelBase {
     'interview_complete',
     'in_use'];
 
+    protected $required = [
+        'meeting_link', 
+        'type', 
+        'details',
+        'time'
+    ];
+
 
 }
