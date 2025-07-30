@@ -19,6 +19,9 @@ class WBEAPIManager {
         });
     }
 
+    public static function setNamespace($namespace) {
+        self::$namespace = $namespace;
+    }
 
     /**
      * Registra una nueva ruta en el API REST
@@ -131,7 +134,11 @@ class WBEAPIManager {
 
             $path = trim($path, '/');
 
-            if (preg_match($pattern, $path)) {
+            if (preg_match($pattern, $path) ) {
+
+                if(!self::checkNonceRest()) {
+                    return new \WP_Error('rest_forbidden', 'No tienes permiso para acceder a esta ruta.', ['status' => 403]);
+                }
 
                 $permission_callback = '__return_true';
                 $permission = $route['permission_callback'];
@@ -179,6 +186,15 @@ class WBEAPIManager {
         }
     }
 
+    public static function checkNonceRest() {
+        $header = $_SERVER['X-WP-Nonce'];
+
+        if (!wp_verify_nonce($header, 'wp_rest')) {
+            return false;
+        }
+
+        return true;
+    }
     /**
      * Permisos útiles
      */

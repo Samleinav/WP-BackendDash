@@ -68,6 +68,7 @@ window.actionDispatcher = actionDispatcher; // Exponer el dispatcher globalmente
 class WPRequest {
     constructor(baseURL = null) {
         this.baseURL = baseURL || window.ajaxurl || '/wp-admin/admin-ajax.php';
+        this.nonce = window.wbeApiSettings?.nonce || document.querySelector('meta[name="wpe-rest-nonce"]')?.getAttribute('content') || '';
     }   
 
     /**
@@ -116,11 +117,15 @@ class WPRequest {
             data: payload,
             processData: false,
             contentType: false,
+            beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-WP-Nonce', window.wbeApiSettings?.nonce || '');
+        }
         })
         .done((response) => {
             if (response.success) {
-                if (dispatchActions && response.data?.actiontodo) {
-                    window.actionDispatcher?.runActions(response.data.actiontodo);
+                if (dispatchActions && response.data?.actiontodo || response.actiontodo) {
+                    let actionTodo = response.actiontodo ? response.actiontodo : response.data?.actiontodo ? response.data.actiontodo : [];
+                    window.actionDispatcher?.runActions(actionTodo);
                 }
                 onSuccess?.(response.data, response);
             } else {

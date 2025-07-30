@@ -8,13 +8,11 @@ class WBEModelBase {
     protected $fillable = [];
     protected $attributes = [];
 
-    public function __construct($table = null, $primaryKey = 'id', $fillable = []) {
-        if ($table) {
+    public function __construct() {
+        if ($this->table) {
             global $wpdb;
-            $this->table = $wpdb->prefix . $table;
+            $this->table = $wpdb->prefix . $this->table;
         }
-        $this->primaryKey = $primaryKey;
-        $this->fillable = $fillable;
     }
 
     public function __get($name) {

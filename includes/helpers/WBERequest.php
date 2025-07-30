@@ -1,7 +1,7 @@
 <?php
 namespace WPBackendDash\Helpers;
 
-use WPBackendDash\Helpers\ActionTodoBuilder;
+use WPBackendDash\Helpers\WBEResponseBuilder;
 
 /**
  * usage
@@ -62,6 +62,36 @@ class WBERequest
             default:
                 return $_REQUEST;
         }
+    }
+
+    public static function file($filename)
+    {
+        if (isset($_FILES[$filename])) {
+            return $_FILES[$filename];
+        }
+        return null;
+    }
+
+    public static function has($key)
+    {
+        $type = self::detectType();
+
+        switch ($type) {
+            case 'json':
+                $body = self::json();
+                return isset($body[$key]);
+            case 'post':
+                return isset($_POST[$key]);
+            case 'get':
+            case 'ajax':
+            default:
+                return isset($_REQUEST[$key]);
+        }
+    }
+
+    public function hasFile($filename)
+    {
+        return isset($_FILES[$filename]) && !empty($_FILES[$filename]['name']);
     }
 
     /**
@@ -141,78 +171,10 @@ class WBERequest
     /**
      * Subclase para manejar las respuestas
      */
+   
     public static function Response()
     {
-        return new class {
-
-            private ActionTodoBuilder $actionTodoBuilder;
-
-            private function __construct()
-            {
-                $this->actionTodoBuilder = new ActionTodoBuilder();
-            }
-
-            public function addAction(string $methodRef, array|string|int|float|null $params = [])
-            {
-                $this->actionTodoBuilder->add($methodRef, $params);
-                return $this;
-            }
-
-            public function actions(array $actions)
-            {
-                foreach ($actions as $action) {
-                    if (is_array($action) && isset($action[0])) {
-                        $this->addAction($action[0], $action[1] ?? []);
-                    } elseif (is_string($action)) {
-                        $this->addAction($action);
-                    }
-                }
-                return $this;
-            }
-
-            protected function prepareResponse($data = [])
-            {
-                $response = $this->actionTodoBuilder->response($data);
-
-                return $response;
-            }
-
-            public function json($data = [], $code = 200)
-            {
-                wp_send_json($this->prepareResponse($data), $code);
-            }
-
-            public function send($data = [], $code = 200)
-            {
-                http_response_code($code);
-                header('Content-Type: application/json');
-                echo json_encode($this->prepareResponse($data));
-                exit;
-            }
-
-            public function wpjson($data = [], $success = true)
-            {
-                if ($success) {
-                    wp_send_json_success($this->prepareResponse($data));
-                } else {
-                    wp_send_json_error($this->prepareResponse($data));
-                }
-            }
-
-            public function redirect($url, $status = 302)
-            {
-                wp_redirect($url, $status);
-                exit;
-            }
-
-            public function text($string, $status = 200)
-            {
-                http_response_code($status);
-                header('Content-Type: text/plain');
-                echo $string;
-                exit;
-            }
-        };
+        return new WBEResponseBuilder();
     }
 
     

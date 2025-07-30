@@ -41,9 +41,16 @@ class WPBackendDashLoader {
 
         WBEAssets::add_js(
             'notify-js',
-            "https://cdnjs.cloudflare.com/ajax/libs/notify.js/2.0.0/notify.min.js",
+            "https://cdn.jsdelivr.net/npm/simple-notify/dist/simple-notify.min.js",
             ['jquery'],
-            '0.4.2',
+            '1.0.0',
+        );
+
+        WBEAssets::add_css(
+            'notify-css',
+            "https://cdn.jsdelivr.net/npm/simple-notify/dist/simple-notify.css",
+            [],
+            '1.0.0',
         );
         WBEAssets::add_js(
             'wpbackenddash-js',

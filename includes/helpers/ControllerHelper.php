@@ -1,6 +1,7 @@
 <?php
 
 namespace WPBackendDash\Helpers;
+use WPBackendDash\Helpers\WBERequest;
 
 class ControllerHelper {
     /**
@@ -94,6 +95,52 @@ class ControllerHelper {
      */
      public static function init() {
         return new static(); 
+    }
+
+
+    public function response() {
+        return WBERequest::Response();
+    }
+
+    public function request() {
+        return new WBERequest;
+    }
+
+    protected function file_resource(){
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+    }
+    
+
+    public function uploadFile($file, $options = ['test_form' => false, 'mimes' => []] ) {
+        $this->file_resource();
+        $upload = wp_handle_upload($file,$options );
+        if (isset($upload['error'])) {
+            return new \WP_Error('upload_error', $upload['error']);
+        }
+
+        $wp_upload_dir = wp_upload_dir();
+        $attachment = [
+            'guid'           => $upload['url'],
+            'post_mime_type' => $upload['type'],
+            'post_title'     => sanitize_file_name($file['name']),
+            'post_content'   => '',
+            'post_status'    => 'inherit',
+            'post_author'    => get_current_user_id(),
+        ];
+        $attachment_id = wp_insert_attachment($attachment, $upload['file']);
+
+        $attach_data = wp_generate_attachment_metadata($attachment_id, $upload['file']);
+        wp_update_attachment_metadata($attachment_id, $attach_data);
+
+        $filedata = [
+            'file_id' => $attachment_id,
+            'file'          => $upload['file'],
+            'url'           => $upload['url'],
+        ];
+
+        return $filedata;
     }
 }
 

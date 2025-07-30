@@ -32,15 +32,17 @@ class WBEChatsRooms extends ControllerHelper {
         // Validación y almacenamiento de datos
         $roomChat = new RoomChatModel();
         $roomChat->fill($data);
+        $roomChat->user_id = get_current_user_id(); // Asignar el ID del usuario actual
+        $roomChat->token = wp_generate_uuid4(); // Generar un token único
         if ($roomChat->save()) {
-            return $request->Response()
-            ->addAction("wbeShowNotify", ["Sala de chat creada exitosamente.", "success"])
-            ->addAction("wbeRedirect", ["url" => wberoute('center.rooms.index')])
-            ->send();
+            return $this->response()
+            ->addAction("wbeShowNotify", ["Exito!", "Sala de chat creada exitosamente.", "success"])
+            ->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = true ])
+            ->wpjson();
         } else {
-            return $request->Response()
+            return $this->response()
                 ->addAction("wbeShowNotify", ["Error al crear la sala de chat.", "error"]) 
-                ->send();
+                ->wpjson();
         }
     }
 

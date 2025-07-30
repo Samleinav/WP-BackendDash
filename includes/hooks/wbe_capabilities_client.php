@@ -23,3 +23,4 @@ function add_client_capabilities() {
 }
 
 add_action('init', 'add_client_capabilities');
+

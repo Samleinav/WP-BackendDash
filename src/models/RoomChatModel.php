@@ -5,11 +5,13 @@ use WPBackendDash\Helpers\WBEModelBase;
 
 class RoomChatModel  extends WBEModelBase {
 
-    protected $table = 'room_chats';
-    protected $fillable = ['user_id', 
+    protected $table = 'ai_interviews';
+    protected $fillable = [
+    'user_id', 
     'meeting_link', 
     'type', 
     'details',
+    'token',
     'attachments',
     'time',
     'tokens',

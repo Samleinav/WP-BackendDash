@@ -17,6 +17,10 @@ add_action('admin_footer', function() {
 			})(links[i]);
 		}
 	});
+	
+	window.wbeApiSettings = {
+		'nonce': <?= json_encode(wp_create_nonce('wp_rest')) ?>
+	};
 
     </script>
     <?php
