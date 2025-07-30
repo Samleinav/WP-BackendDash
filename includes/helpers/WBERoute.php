@@ -34,7 +34,7 @@ class WBERoute {
             list($regex, $redirect) = self::convertPrettyToRegex($pretty, $redirect, $usePrefix);
         } else {
             // CAMBIO: También aplicamos el prefijo a las rutas sin placeholders
-            $regex = '^' . ($usePrefix ? '([0-9a-zA-Z_-]+/)?' : '') . trim($route, '/') . '/?$';
+            $regex = '^' . ($usePrefix ? '([^/]+/)?' : '') . trim($route, '/') . '/?$';
         }
         
         $normalized = [
@@ -83,7 +83,7 @@ class WBERoute {
         }, $pretty);
 
         // CAMBIO: Añade el prefijo al inicio del regex si se solicita.
-        $prefixRegex = $addPrefix ? '([0-9a-zA-Z_-]+/)?' : '';
+        $prefixRegex = $addPrefix ? '([^/]+/)?' : '';
         $regex = '^' . $prefixRegex . trim($regex, '/') . '/?$';
 
         foreach ($paramMap as $name => $index) {

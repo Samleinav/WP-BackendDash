@@ -189,13 +189,23 @@ class WBEAPIManager {
         }
     }
 
+    private static function prettyToRegex(string $pretty): string
+    {
+        $regex = preg_replace_callback('/\{(\w+)\}/', function () {
+            return '([^/]+)';
+        }, $pretty);
+
+        return '^' . trim($regex, '/') . '/?$';
+    }
+
     public static function matchCurrentRoute()
     {
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-        $uri = preg_replace('#^wp-json/#', '', $uri); // remove "wp-json/"
 
         foreach (self::$routes as $route) {
-            $pattern = '#^' . $route['regex'] . '$#';
+            
+            $regex = self::prettyToRegex($route['full_route']);
+            $pattern = '#^' . $regex . '$#';
 
             if (preg_match($pattern, $uri, $matches)) {
                array_shift($matches); // Quita el resultado completo
@@ -206,7 +216,7 @@ class WBEAPIManager {
 				$matches = array_values(array_filter($matches, 'strlen'));
 
 				// Extraer nombres de la URL 'pretty'
-				preg_match_all('/\{(\w+)\}/', $route['pretty'] ?? '', $nameMatches);
+				preg_match_all('/\{(\w+)\}/', $route['full_route'] ?? '', $nameMatches);
 				$varNames = $nameMatches[1];
 
 				// Combinar nombres con valores ya limpios

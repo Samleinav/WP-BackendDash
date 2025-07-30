@@ -14,13 +14,13 @@ WBERoute::route(
 );
     WBERoute::route(
         'center.rooms.view',
-        'center/rooms/{$room_id}/start',
+        'center/rooms/{room_id}/start',
         '/wp-admin/admin.php?page=wbe_admin_page_chats_room_view&$room_id=$2',
     );
 
     WBERoute::route(
         'center.rooms.edit',
-        'center/rooms/{$room_id}/edit',
+        'center/rooms/{room_id}/edit',
         '/wp-admin/admin.php?page=wbe_admin_page_chats_room_edit&$room_id=$2',
     );
 
