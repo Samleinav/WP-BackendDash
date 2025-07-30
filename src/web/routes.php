@@ -14,7 +14,7 @@ WBERoute::route(
 );
     WBERoute::route(
         'center.rooms.view',
-        'center/rooms/{$room_id}/view',
+        'center/rooms/{$room_id}/start',
         '/wp-admin/admin.php?page=wbe_admin_page_chats_room_view&$room_id=$2',
     );
 

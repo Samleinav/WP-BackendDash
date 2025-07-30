@@ -40,10 +40,11 @@ class WBEModelBase {
         return $this->required;
     }
     
-    public function find($id) {
+    public static function find($id) {
         global $wpdb;
+        $model = new static();
         $row = $wpdb->get_row(
-            $wpdb->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = %d", $id),
+            $wpdb->prepare("SELECT * FROM {$model->table} WHERE {$model->primaryKey} = %d", $id),
             ARRAY_A
         );
         if ($row) {
@@ -52,10 +53,11 @@ class WBEModelBase {
         return null;
     }
 
-    public function where($column, $value) {
+    public static function where($column, $value) {
         global $wpdb;
+        $model = new static();
         $results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->table} WHERE {$column} = %s", $value),
+            $wpdb->prepare("SELECT * FROM {$model->table} WHERE {$column} = %s", $value),
             ARRAY_A
         );
 

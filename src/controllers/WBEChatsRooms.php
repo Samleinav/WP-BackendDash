@@ -67,6 +67,35 @@ class WBEChatsRooms extends ControllerHelper {
         return self::view('chats_rooms/edit', compact('room_id'));
     }
 
+    public function update(WBERequest $request, $room_id) {
+        // Lógica para actualizar una sala de chat existente)
+        $roomChat = RoomChatModel::find($room_id);
+        $data = $request->all();
+
+        $roomChat->fill($data);
+        
+        if($request->hasFile('attachments')) {
+            $attachments = $request->file('attachments');
+            $file = $this->uploadFile($attachments, ['user_id' => $roomChat->user_id]);
+            $roomChat->attachments = $file['file_id'] ?? null;
+        }
+
+        if ($roomChat->save()) {
+            $response = WBERequest::Response();
+
+            $response->addAction("wbeShowNotify", ["Exito!", "Sala de chat creada exitosamente.", "success"]);
+
+            return $response->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = true ])
+            ->wpjson();
+        } else {
+            return $this->response()
+                ->addAction("wbeShowNotify", ["Error al crear la sala de chat.", "error"]) 
+                ->wpjson();
+        }
+
+
+    }                                                     
+
     public function delete($room_id) {
         // Lógica para eliminar una sala de chat
         echo "Sala de chat eliminada: " . esc_html($room_id);
