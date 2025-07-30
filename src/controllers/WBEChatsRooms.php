@@ -43,13 +43,17 @@ class WBEChatsRooms extends ControllerHelper {
         if($request->hasFile('attachments')) {
             $attachments = $request->file('attachments');
             $file = $this->uploadFile($attachments, ['user_id' => $roomChat->user_id]);
+            $roomChat->attachments = $file['file_id'] ?? null;
         }
 
+         // Asignar el ID del archivo adjunto si se subió uno
+
         if ($roomChat->save()) {
-            return $this->response()
-            ->addAction("wbeShowNotify", ["Exito!", "Sala de chat creada exitosamente.", "success"])
-            ->addAction("wbeShowNotify", ["File uploaded!", $file['file_id'], "success"])
-            ->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = false ])
+            $response = WBERequest::Response();
+
+            $response->addAction("wbeShowNotify", ["Exito!", "Sala de chat creada exitosamente.", "success"]);
+
+            return $response->addAction("wbeRedirect", [ wberoute('center.rooms.index'), $force = true ])
             ->wpjson();
         } else {
             return $this->response()
