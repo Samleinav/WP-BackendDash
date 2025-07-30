@@ -6,25 +6,12 @@ use WPBackendDash\Helpers\ControllerHelper;
 use WPBackendDash\Helpers\WBERequest;
 
 class WBEOrdersController extends ControllerHelper{
-    /**
-     * Constructor para inicializar el controlador.
-     */
-    public function __construct() {
-       
-        // Aquí puedes inicializar cualquier cosa específica del controlador de órdenes
-         if ( ! session_id() ) { // Solo inicia la sesión si no hay una activa
-            session_start();
-        }
-    }
+   
     /**
      * Renderiza la página de listado de órdenes.
      */
     public function index() {
-        // Verifica si el usuario tiene acceso a esta página
-        //if (!self::hasPageAccess('wbe_admin_page_orders')) {
-        //    wp_die(__('No tienes permiso para acceder a esta página.', 'wp-backend-dash'));
-        //}
-
+    
         // Renderiza la vista con las órdenes
         return self::view('orders/index');
     }
@@ -43,12 +30,11 @@ class WBEOrdersController extends ControllerHelper{
             return '<div class="wrap"><h1>Order Details</h1><p>Please provide a valid order number.</p></div>';
         }
 
-        // *** IMPORTANTE: Reemplaza '_order_number' con la meta key real de tu plugin de números de orden secuenciales ***
-        // Ejemplos comunes: '_wc_order_number', '_webtoffee_order_number', '_custom_order_number'
-        $meta_key_for_sequential_number = '_order_number'; // Asume esta, pero verifica tu plugin
+        
+        $meta_key_for_sequential_number = '_order_number'; 
         $args = array(
-            'limit'      => 1, // Queremos solo una orden ya que el número de serie debería ser único.
-            'customer_id' => self::getCurrentUserId(), // Opcional: filtra por el usuario actual si es necesario
+            'limit'      => 1, 
+            'customer_id' => self::getCurrentUserId(), 
             'meta_query' => array(
                 array(
                     'key'     => $meta_key_for_sequential_number,
@@ -56,9 +42,6 @@ class WBEOrdersController extends ControllerHelper{
                     'compare' => '=',
                 ),
             ),
-            // No necesitamos 'post_type' ni 'post_status' si usamos 'wc_get_orders()'
-            // ya que esta función ya opera sobre los tipos de post de orden y HPOS.
-            // Opcional: Si quieres filtrar por un estado específico:
             // 'status' => 'wc-completed',
         );
 

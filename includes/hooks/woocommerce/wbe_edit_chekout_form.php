@@ -4,6 +4,9 @@ add_filter( 'woocommerce_checkout_fields', 'custom_remove_checkout_fields_for_vi
 
 function custom_remove_checkout_fields_for_virtual( $fields ) {
 
+    if(is_admin() || ! is_checkout()){
+        return $fields;
+    } 
     // Detectar si todos los productos son virtuales
     $only_virtual = true;
     foreach ( WC()->cart->get_cart() as $cart_item ) {
@@ -34,3 +37,7 @@ function custom_remove_checkout_fields_for_virtual( $fields ) {
 
     return $fields;
 }
+
+
+// Opcional: Para eliminar las notas del pedido (información adicional)
+add_filter( 'woocommerce_enable_order_notes_field' , '__return_false' );
